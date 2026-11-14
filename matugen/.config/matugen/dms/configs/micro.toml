@@ -1,0 +1,3 @@
+[templates.micro]
+input_path = "~/.config/matugen/templates/micro.micro"
+output_path = "~/.config/micro/colorschemes/matugen.micro"

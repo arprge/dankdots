@@ -1,0 +1,125 @@
+// DMS Window Rules - Managed by Dux Modular Shell
+// Do not edit manually - changes may be overwritten
+
+// @id=wr_1791349892023486427 @name=xdg-desktop-portal-gtk
+window-rule {
+    match app-id="^xdg-desktop-portal-gtk$"
+    opacity 0.89
+    default-column-width { fixed 960; }
+    default-window-height { fixed 620; }
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
+// @id=wr_1791381148202145027 @name=org.gnome.Nautilus
+window-rule {
+    match app-id="^org.gnome.Nautilus$"
+    opacity 0.92
+    open-floating false
+    default-column-width { fixed 975; }
+    default-window-height { fixed 850; }
+    background-effect {
+        blur true
+        xray true
+    }
+}
+
+// @id=wr_1791579144366759166 @name=mpv
+window-rule {
+    match app-id="^mpv$"
+    open-maximized true
+}
+
+// @id=wr_1791582551898367921 @name=steam
+window-rule {
+    match app-id="^steam$"
+    open-floating true
+    open-maximized-to-edges true
+}
+
+// @id=wr_1792692756458252109 @name=dev.duxlabs.files
+window-rule {
+    match app-id="^dev.duxlabs.files$"
+    opacity 0.85
+    open-floating true
+    default-column-width { proportion 0.85; }
+    default-window-height { proportion 0.92; }
+    variable-refresh-rate true
+    background-effect {
+        blur true
+        xray true
+    }
+}
+
+// @id=wr_1792867023504263549 @name=org.qbittorrent.qBittorrent
+window-rule {
+    match app-id="^org.qbittorrent.qBittorrent$"
+    opacity 0.93
+    default-column-width { fixed 980; }
+    background-effect {
+        blur true
+        xray true
+        noise 0.03
+    }
+}
+
+// @id=wr_1793376172770657890 @name=zen
+window-rule {
+    match app-id="^zen$"
+    variable-refresh-rate true
+    background-effect {
+        blur true
+        xray true
+    }
+}
+
+// @id=wr_1793462891803362969 @name=rocks.zapfast.ZapFast
+window-rule {
+    match app-id="^rocks.zapfast.ZapFast$"
+    scroll-factor 1.19
+}
+
+// @id=wr_1793866419173978368 @name=rocks.zapfast.ZapFast
+window-rule {
+    match app-id="^rocks.zapfast.ZapFast$"
+    default-column-width { fixed 800; }
+    variable-refresh-rate true
+    scroll-factor 1.65
+}
+
+// @id=wr_1794044823745507314 @name=ai.storyteller.wordcraft
+window-rule {
+    match app-id="^ai.storyteller.wordcraft$"
+    default-column-width { fixed 975; }
+    scroll-factor 2.00
+}
+
+// @id=wr_1794234111447608045 @name=dev.zed.Zed
+window-rule {
+    match app-id="^dev.zed.Zed$"
+    open-floating false
+    default-column-width { fixed 1000; }
+}
+
+// @id=wr_1794325641952637369 @name=whatrust
+window-rule {
+    match app-id="^whatrust$"
+    default-column-width { proportion 0.84; }
+}
+
+// @id=wr_1794680586746642910 @name=kitty
+window-rule {
+    match app-id="^kitty$"
+    background-effect {
+        blur true
+        xray true
+    }
+}
+
+// @id=dms-window-opaque @name=DMS Window Opaque
+window-rule {
+    match app-id="^(dev\\.duxlabs\\.shell|com\\.danklinux\\.dms)$"
+    opacity 1.00
+}

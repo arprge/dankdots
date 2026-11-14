@@ -1,0 +1,9 @@
+anilistToken.txt
+anilistUpdater.conf
+cache.json
+queue.json
+queue.lock
+__pycache__
+.vscode
+.pytest_cache
+.ruff_cache
