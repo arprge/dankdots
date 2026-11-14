@@ -1,0 +1,15 @@
+# Enter = "smart enter": cd into the hovered directory, otherwise open the file
+# (text/code files go to micro, see the [opener]/[open] sections in yazi.toml).
+#
+# Yazi intentionally keeps "open" and "enter" separate, so by default <Enter>
+# (== "open") feeds a directory to $EDITOR, which is why nano was opening.
+[[mgr.prepend_keymap]]
+on   = [ "<Enter>" ]
+run  = "plugin smart-enter"
+desc = "Enter the child directory, or open the file"
+
+[[mgr.prepend_keymap]]
+on   = [ "<Delete>" ]
+run  = "remove --force"
+desc = "Move files to trash using the Delete key"
+

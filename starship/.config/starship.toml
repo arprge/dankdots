@@ -1,0 +1,107 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Starship prompt — colors follow DMS through kitty's ANSI palette.
+# Use ANSI names (cyan, blue, yellow, red) so ~/.config/kitty/dank-theme.conf
+# stays the single source of truth.
+
+add_newline = false
+scan_timeout = 500
+
+format = """
+${custom.dir_icon}$username$hostname$directory $git_branch$git_state$git_commit$git_status$cmd_duration
+$status$jobs$character"""
+
+[character]
+success_symbol = "[  󰁕](bold cyan)"
+error_symbol = "[  󰅖](bold red)"
+
+[custom.dir_icon]
+when = true
+shell = ["sh"]
+style = "bold fg:blue"
+format = "[$output]($style) [❘](fg:bright-black) "
+command = '''
+case "$PWD" in
+  "$HOME") echo "󰋜" ;;
+  "$HOME/Desktop"*) echo "󰟀" ;;
+  "$HOME/Documents"*) echo "󰈙" ;;
+  "$HOME/Downloads"*) echo "󰇚" ;;
+  "$HOME/Music"*) echo "󰎈" ;;
+  "$HOME/Pictures"*) echo "󰉏" ;;
+  "$HOME/Videos"*) echo "󰕧" ;;
+  "$HOME/Projects"*|"$HOME/Workspace"*) echo "󰏗" ;;
+  "$HOME/GitHub"*) echo "󰊤" ;;
+  "$HOME/.config"*|"/etc"*) echo "󰒓" ;;
+  "$HOME/.ssh"*) echo "󰢬" ;;
+  "$HOME/.local"*) echo "󰉉" ;;
+  "$HOME/.cache"*|"/tmp"*) echo "󰃨" ;;
+  *) echo "󰜥" ;;
+esac
+'''
+
+[directory]
+home_symbol = "~"
+read_only = " 󰌾 "
+style = "bold fg:cyan"
+truncation_length = 6
+truncation_symbol = "••/"
+format = '[$path]($style)'
+
+[git_branch]
+symbol = "󰘬"
+truncation_length = 12
+truncation_symbol = ""
+format = '[$symbol $branch(:$remote_branch)](bold fg:blue)'
+
+[cmd_duration]
+min_time = 1000
+show_milliseconds = false
+style = "fg:bright-black"
+format = '[$duration]($style)'
+
+[username]
+disabled = false
+show_always = false
+style_user = "bold fg:cyan"
+style_root = "bold fg:red"
+format = '[$user](bold fg:cyan)'
+
+[hostname]
+ssh_only = true
+trim_at = "."
+format = '[@$hostname](bold fg:cyan) '
+
+[git_state]
+style = "bold fg:yellow"
+format = ' [$state( $progress_current/$progress_total)]($style)'
+
+[git_commit]
+style = "bold fg:red"
+commit_hash_length = 4
+format = '( 󰊢 [$hash]($style) )'
+
+[git_status]
+ignore_submodules = true
+style = "bold fg:cyan"
+format = '([\[$all_status$ahead_behind\] ]($style))'
+conflicted = "󰅖 "
+ahead = "󰁔 "
+behind = "󰁕 "
+diverged = "󰂺 "
+untracked = "󰋗 "
+stashed = "󰏗 "
+modified = "󰏫 "
+staged = "󰐕 "
+renamed = "󰑕 "
+deleted = "󰆴 "
+
+[status]
+disabled = false
+style = "bold fg:red"
+symbol = ""
+format = '([$status]($style) )'
+
+[jobs]
+symbol = "󰒓 "
+style = "bold fg:yellow"
+format = '([$symbol$number]($style) )'

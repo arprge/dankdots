@@ -1,0 +1,128 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "type": "file",
+    "source": "~/.config/fastfetch/lumo-lines.txt",
+    "color": {
+      "1": "blue",
+      "2": "white"
+    },
+    "padding": {
+      "top": 1,
+      "left": 1,
+      "right": 4
+    }
+  },
+  "display": {
+    "separator": "| ",
+    "brightColor": false,
+    "disableLinewrap": true,
+    "color": {
+      "separator": "90"
+    },
+    "bar": {
+      "width": 11,
+      "char": {
+        "elapsed": "━",
+        "total": " "
+      },
+      "border": {
+        "left": "(",
+        "right": ")"
+      }
+    },
+    "percent": {
+      "type": [
+        "bar",
+        "bar-monochrome",
+        "num",
+        "num-color"
+      ]
+    }
+  },
+  "modules": [
+    {
+      "type": "title",
+      "format": "{#1}{#cyan}{user-name}{#90}@{#38;2;216;220;255}{host-name}"
+    },
+    {
+      "type": "custom",
+      "format": "{#90}╭─────────────────────────────────────────────────────────────"
+    },
+    {
+      "type": "os",
+      "key": "OS      "
+    },
+    {
+      "type": "kernel",
+      "key": "Kernel  ",
+      "format": "{#cyan} {#}{sysname} {release}"
+    },
+    {
+      "type": "uptime",
+      "key": "Uptime  ",
+      "format": "{?days}{days}d {?}{hours}h {minutes}m"
+    },
+    {
+      "type": "packages",
+      "key": "Packages"
+    },
+    {
+      "type": "shell",
+      "key": "Shell   "
+    },
+    "break",
+    {
+      "type": "wm",
+      "key": "WM      "
+    },
+    {
+      "type": "terminal",
+      "key": "Terminal"
+    },
+    {
+      "type": "terminalfont",
+      "key": "Font    "
+    },
+    {
+      "type": "weather",
+      "key": "Weather ",
+      "timeout": 1000
+    },
+    "break",
+    {
+      "type": "cpu",
+      "key": "CPU     ",
+      "temp": true,
+      "showPeCoreCount": true
+    },
+    {
+      "type": "gpu",
+      "key": "GPU     ",
+      "driverSpecific": true,
+      "temp": true
+    },
+    {
+      "type": "memory",
+      "key": "Memory  ",
+      "format": "{used} / {total} ({percentage}) {percentage-bar}"
+    },
+    {
+      "type": "disk",
+      "key": "Disk    ",
+      "format": "{size-used} / {size-total} ({size-percentage}) {size-percentage-bar} {#90}[{filesystem}]{#}"
+    },
+    {
+      "type": "battery",
+      "key": "Battery ",
+      "temp": true,
+      "format": "{capacity}{?temperature} ({temperature}){?} {capacity-bar} {#90}[{model-name}]{#} {#green}{?status}󰚥 {status}{?}{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#90}─────────────────────────────────────────────────────────────╯"
+    },
+    "break",
+    "colors"
+  ]
+}

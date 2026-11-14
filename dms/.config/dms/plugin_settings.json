@@ -1,0 +1,33 @@
+{
+  "quickCapture": {
+    "enabled": true
+  },
+  "screenCaptureToolbar": {
+    "enabled": true,
+    "videoQuality": "very_high",
+    "captureMode": "monitor",
+    "swapCaptureKeys": false,
+    "quality": "90",
+    "showAdvancedSettings": true,
+    "videoCodec": "av1_10bit",
+    "audioCodec": "opus",
+    "copyToClipboard": true,
+    "saveToDisk": false
+  },
+  "materialPlayer": {
+    "enabled": true
+  },
+  "wallarchyDms": {
+    "enabled": true
+  },
+  "dankCleaner": {
+    "enabled": true,
+    "cleanupTmp": true
+  },
+  "dankKDEConnect": {
+    "enabled": true,
+    "showOngoingMedia": false,
+    "stateUpdateInterval": 60,
+    "selectedDeviceId": "b06fbb9798574016b00feea9ca15e7fe"
+  }
+}

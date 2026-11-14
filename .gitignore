@@ -1,0 +1,21 @@
+# Secrets & runtime tokens
+**/anilistToken.txt
+**/cache.json
+*.token
+.env
+
+# Runtime state & caches
+**/watch_later/
+**/.changelog-*
+**/.firstlaunch
+**/.uuid
+**/.zcompdump*
+**/*.zwc
+**/__pycache__/
+**/*.pyc
+# OS & editor artifacts
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo

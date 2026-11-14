@@ -1,0 +1,67 @@
+# Dux Search — low-CPU / lightweight profile
+index_path       = "@HOME@/.cache/dsearch/index"
+listen_addr      = "127.0.0.1:43654"
+max_file_bytes   = 1048576   # 1 MB (default 2 MB)
+worker_count     = 2         # default would be 4
+index_all_files  = true      # non-text files indexed by filename only
+index_xattr_tags = false     # avoid an extra syscall per file
+
+text_extensions = [
+    ".txt", ".md", ".go", ".py", ".js", ".ts", ".jsx", ".tsx", ".json",
+    ".yaml", ".yml", ".toml", ".html", ".css", ".rs", ".c", ".cpp", ".h",
+    ".java", ".rb", ".php", ".sh", ".conf", ".ini", ".lua", ".nix",
+    ".kt", ".sql", ".fish", ".zsh", ".bash",
+]
+
+# Documents — full depth, watched, no EXIF
+[[index_paths]]
+path = "@HOME@/Documents"
+max_depth = 0
+exclude_hidden = true
+watch = true
+extract_exif = false
+merge_default_exclude_dirs = true
+exclude_dirs = ["secrets"]
+
+[[index_paths]]
+path = "@HOME@/Downloads"
+max_depth = 0
+exclude_hidden = true
+watch = true
+extract_exif = false
+merge_default_exclude_dirs = true
+
+[[index_paths]]
+path = "@HOME@/Desktop"
+max_depth = 0
+exclude_hidden = true
+watch = true
+extract_exif = false
+merge_default_exclude_dirs = true
+
+[[index_paths]]
+path = "@HOME@/Projects"
+max_depth = 0
+exclude_hidden = true
+watch = true
+extract_exif = false
+merge_default_exclude_dirs = true
+exclude_dirs = ["build", "out", ".idea", "node_modules", "target"]
+
+# Pictures — EXIF only here (8 dirs, cheap to watch)
+[[index_paths]]
+path = "@HOME@/Pictures"
+max_depth = 0
+exclude_hidden = true
+watch = true
+extract_exif = true
+merge_default_exclude_dirs = true
+
+# Videos — filenames only, shallow (18 dirs, cheap to watch)
+[[index_paths]]
+path = "@HOME@/Videos"
+max_depth = 2
+exclude_hidden = true
+watch = true
+extract_exif = false
+merge_default_exclude_dirs = true

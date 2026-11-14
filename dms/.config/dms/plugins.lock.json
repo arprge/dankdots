@@ -1,0 +1,13 @@
+{
+  "lockfileVersion": 1,
+  "plugins": {
+    "materialPlayer": {
+      "repo": "https://github.com/notsopreety/materialPlayer",
+      "commit": "0305afcd246e91c19cc03b44dc4f354ab78621c3"
+    },
+    "screenCaptureToolbar": {
+      "repo": "https://github.com/JDKamalakar/DMS-ScreenCapture_Toolbar",
+      "commit": "ee2050e6398bbd1a0fc56df9bbd0468944e87aec"
+    }
+  }
+}
