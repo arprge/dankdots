@@ -32,6 +32,7 @@ cd ~/dankdots
 | `./install.sh zsh kitty niri` | install specific packages only |
 | `./install.sh --sync` | pull live edits from `$HOME` back into the repo |
 | `./install.sh --unlink` | remove symlinks and rendered files created by the installer |
+| `./install.sh --uninstall` | unlink configs and restore the latest `~/.dotfiles-backup/` |
 
 ## Keys
 

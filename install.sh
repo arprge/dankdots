@@ -53,6 +53,7 @@ Options:
       --no-backup       Replace existing files without backing them up
       --skip-deps       Skip system packages, Oh My Zsh, and app installation
       --unlink          Remove symlinks/rendered files pointing into this repository
+      --uninstall       Unlink configs and restore the latest ~/.dotfiles-backup/
       --sync            Copy live files from \$HOME back into this repository
   -h, --help            Show this help message
 
@@ -62,6 +63,7 @@ Examples:
   ./$(basename "$0") --dry-run      # Preview full install
   ./$(basename "$0") zsh kitty niri # Install only zsh, kitty, and niri
   ./$(basename "$0") --unlink nvim  # Remove nvim symlinks
+  ./$(basename "$0") --uninstall    # Remove linked configs and restore latest backup
   ./$(basename "$0") --sync         # Pull live changes from \$HOME into repo
 EOF
 }
@@ -377,11 +379,51 @@ process_package() {
     fi
 
     case "$MODE" in
-      install) install_file "$src" "$dst" ;;
-      unlink)  unlink_file "$src" "$dst" ;;
-      sync)    sync_file "$src" "$dst" ;;
+      install)           install_file "$src" "$dst" ;;
+      unlink|uninstall)  unlink_file "$src" "$dst" ;;
+      sync)              sync_file "$src" "$dst" ;;
     esac
   done < <(find "$pkg_dir" \( -type f -o -type l \) -print0 | sort -z)
+}
+
+restore_latest_backup() {
+  local backup_parent="${HOME}/.dotfiles-backup"
+  [[ -d "$backup_parent" ]] || return 0
+
+  local latest=""
+  local dir
+  for dir in "$backup_parent"/*/; do
+    [[ -d "$dir" ]] && latest="$dir"
+  done
+  [[ -n "$latest" ]] || return 0
+  latest="${latest%/}"
+
+  section "Restoring backup: $latest"
+  local restored=0
+  local bak_file
+  while IFS= read -r -d '' bak_file; do
+    local rel="${bak_file#"$latest"/}"
+    local dst="${HOME}/${rel}"
+
+    if [[ -e "$dst" || -L "$dst" ]]; then
+      continue
+    fi
+
+    if [[ "$DRY_RUN" == true ]]; then
+      info "[dry-run] would restore $bak_file -> $dst"
+    else
+      mkdir -p -- "$(dirname -- "$dst")"
+      mv -- "$bak_file" "$dst"
+      ok "restored $dst"
+    fi
+    ((restored += 1))
+  done < <(find "$latest" \( -type f -o -type l \) -print0 | sort -z)
+
+  if (( restored == 0 )); then
+    info "No matching files to restore from $latest"
+  elif [[ "$DRY_RUN" == false ]]; then
+    find "$latest" -type d -empty -delete 2>/dev/null || true
+  fi
 }
 
 clone_if_missing() {
@@ -581,7 +623,8 @@ main() {
       --me|--personal) PERSONAL=true ;;
       --no-backup)    NO_BACKUP=true ;;
       --skip-deps)    SKIP_DEPS=true ;;
-      --unlink|--uninstall) MODE="unlink" ;;
+      --unlink)       MODE="unlink" ;;
+      --uninstall)    MODE="uninstall" ;;
       --sync)         MODE="sync" ;;
       -h|--help)      usage; exit 0 ;;
       -*)
@@ -646,6 +689,11 @@ main() {
   if [[ "$MODE" == "install" && "$SKIP_DEPS" == false ]]; then
     bootstrap_fonts
     check_tools
+  elif [[ "$MODE" == "uninstall" ]]; then
+    restore_latest_backup
+    if command -v fc-cache >/dev/null 2>&1 && [[ "$DRY_RUN" == false ]]; then
+      fc-cache -f "${HOME}/.local/share/fonts" >/dev/null 2>&1 || true
+    fi
   fi
 
   printf "\n"
