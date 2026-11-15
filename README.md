@@ -10,8 +10,7 @@
 <img width="1920" height="1080" alt="screenshot_2026-11-15_22-49-02" src="https://github.com/user-attachments/assets/c4fce994-2ae4-46c2-9eff-497ec28b726d" />
 <img width="1920" height="1080" alt="screenshot_2026-11-15_22-49-51" src="https://github.com/user-attachments/assets/ba1e4fd2-7b1c-4461-bda8-c45c429ef921" />
 <img width="1921" height="1080" alt="screenshot_2026-10-31_22-01-38" src="https://github.com/user-attachments/assets/58aaa34c-509b-42d4-8c18-ce419118c751" />
-<img width="1920" height="1080" alt="screenshot_2026-11-15_22-51-32" src="https://github.com/user-attachments/assets/48dbe7b4-5d73-44d3-8ac2-5980c5fb9292" />
-
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/7d408f8e-0c76-467b-bb92-235e4d5dbaa2" />
 
 
 
