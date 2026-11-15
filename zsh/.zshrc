@@ -181,7 +181,7 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 # bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+[ -s "/home/nkaet/.bun/_bun" ] && source "/home/nkaet/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
@@ -189,7 +189,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 
 # Added by Antigravity CLI installer
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="/home/nkaet/.local/bin:$PATH"
 
 #micro
 export MICRO_TRUECOLOR=1

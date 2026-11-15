@@ -68,6 +68,7 @@ window-rule {
 // @id=wr_1793376172770657890 @name=zen
 window-rule {
     match app-id="^zen$"
+    default-column-width { proportion 0.9; }
     variable-refresh-rate true
     background-effect {
         blur true
@@ -112,6 +113,7 @@ window-rule {
 // @id=wr_1794680586746642910 @name=kitty
 window-rule {
     match app-id="^kitty$"
+    default-column-width { proportion 0.56; }
     background-effect {
         blur true
         xray true

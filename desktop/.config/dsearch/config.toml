@@ -40,13 +40,13 @@ extract_exif = false
 merge_default_exclude_dirs = true
 
 [[index_paths]]
-path = "@HOME@/Projects"
+path = "@HOME@/IdeaProjects"
 max_depth = 0
 exclude_hidden = true
 watch = true
 extract_exif = false
 merge_default_exclude_dirs = true
-exclude_dirs = ["build", "out", ".idea", "node_modules", "target"]
+exclude_dirs = ["build", "out", ".idea"]
 
 # Pictures — EXIF only here (8 dirs, cheap to watch)
 [[index_paths]]

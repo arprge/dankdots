@@ -18,7 +18,8 @@
 ## What's in it
 
 - [niri](https://github.com/YaLTeR/niri) + **Dux shell** (`dms`, `dfiles`, `dsearch`, `dux-greeter`): bar, dock, spotlight launcher, notifications, clipboard, screen capture toolbar, and lock screen
-- one wallpaper palette via `matugen` across Kitty, Neovim (LazyVim), Micro, Zed, Zen, AyuGram, GTK 3/4, Qt (Darkly), btop, and cava
+- my custom shader animations for window opening and closing animations, with liquid glass feel
+- one wallpaper palette via `matugen` across Kitty, Neovim (LazyVim), Micro, Zed, Zen, GTK 3/4, Qt (Darkly), btop, and cava
 - real background blur in Niri, borderless rounded windows, smooth spring animations, and native `dfiles` XDG file-picker portal
 - Kitty with cursor trail and powerline tabs, Zsh + Starship prompt, custom Fastfetch logo, bundled UI fonts (`Oxanium`, `Bodoni Moda`, `Roboto Flex`, `GoogleSansCode Nerd Font`), and curated wallpapers
 
@@ -47,7 +48,7 @@ cd ~/dankdots
 |---|---|
 | <kbd>Ctrl</kbd>+<kbd>Space</kbd> · <kbd>Alt</kbd>+<kbd>Space</kbd> | spotlight launcher · spotlight bar |
 | <kbd>Super</kbd>+<kbd>T</kbd> | terminal (kitty) |
-| <kbd>Ctrl</kbd>+<kbd>\</kbd> · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>\</kbd> | yazi · dfiles file manager |
+| <kbd>Ctrl</kbd>+<kbd>&#92;</kbd> · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>&#92;</kbd> | yazi · dfiles file manager |
 | <kbd>Super</kbd>+<kbd>O</kbd> · <kbd>Super</kbd>+<kbd>1</kbd>…<kbd>9</kbd> | overview · workspaces |
 | <kbd>Super</kbd>+<kbd>Y</kbd> · <kbd>Super</kbd>+<kbd>,</kbd> | wallpapers · dux settings |
 | <kbd>Super</kbd>+<kbd>N</kbd> · <kbd>Super</kbd>+<kbd>V</kbd> | notifications · clipboard |

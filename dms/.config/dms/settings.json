@@ -19,7 +19,7 @@
   "floatingWindowSyncGlobal": false,
   "floatingWindowTransparency": 0.93,
   "floatingWindowForegroundTransparency": 0.8,
-  "niriLayoutBorderSize": 0,
+  "niriLayoutBorderSize": -1,
   "mouseAccelProfile": "adaptive",
   "mouseScrollFactor": 0.9,
   "touchpadAccelProfile": "adaptive",
@@ -283,7 +283,8 @@
       "followInterfaceStyle": false,
       "widgetFollowInterfaceStyle": true,
       "widgetStyle": "flat",
-      "islandSatelliteGap": 8
+      "islandSatelliteGap": 8,
+      "barLengthMode": "full"
     },
     {
       "id": "dot1792405993050",
@@ -482,7 +483,7 @@
   "frameThickness": 6,
   "frameRounding": 14,
   "frameBarSize": 26,
-  "configVersion": 43,
+  "configVersion": 44,
   "lockScreenWidgetInstances": [
     {
       "id": "lock_clock",
@@ -692,6 +693,7 @@
       "smartAutoHide": false,
       "useOverlayLayer": false,
       "editOnRightClick": false,
+      "showEditWidgetsInContextMenu": true,
       "showOnFullscreen": false,
       "openOnOverview": true,
       "groupByApp": true,
@@ -813,7 +815,7 @@
   "matugenSpec": "2025",
   "generateThemeAtStartup": false,
   "focusRingWidth": 1,
-  "focusRingColor": "outline",
+  "focusRingColor": "secondary",
   "scrollbarsEnabled": true,
   "springBounce": 1,
   "motionEffect": 3,
@@ -1043,5 +1045,13 @@
   "spotlightSectionViewModes": {
     "apps": "list"
   },
-  "launcherUseOverlayLayer": false
+  "launcherUseOverlayLayer": false,
+  "compositorAnimationPreset": "material",
+  "compositorAnimationOverrides": {},
+  "compositorAnimationSlowdown": 0.8,
+  "mangoLayoutGapsOverride": -1,
+  "mangoLayoutBorderSize": -1,
+  "connectedFrameBarStyleBackups": {},
+  "frameEnabled": false,
+  "focusFollowsMouse": 1
 }
