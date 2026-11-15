@@ -21,7 +21,7 @@
 - my custom shader animations for window opening and closing animations, with liquid glass feel
 - one wallpaper palette via `matugen` across Kitty, Neovim (LazyVim), Micro, Zed, Zen, GTK 3/4, Qt (Darkly), btop, and cava
 - real background blur in Niri, borderless rounded windows, smooth spring animations, and native `dfiles` XDG file-picker portal
-- Kitty with cursor trail and powerline tabs, Zsh + Starship prompt, custom Fastfetch logo, bundled UI fonts (`Oxanium`, `Bodoni Moda`, `Roboto Flex`, `GoogleSansCode Nerd Font`), and curated wallpapers
+- Kitty with cursor trail and powerline tabs, Zsh + customized Starship prompt, custom Fastfetch logo, bundled UI fonts (`Oxanium`, `Bodoni Moda`, `Roboto Flex`, `GoogleSansCode Nerd Font`), and curated wallpapers
 
 ## Install
 
