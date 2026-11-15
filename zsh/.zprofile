@@ -7,4 +7,4 @@
 
 
 # Added by Antigravity CLI installer
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="/home/nkaet/.local/bin:$PATH"

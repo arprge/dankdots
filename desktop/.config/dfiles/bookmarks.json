@@ -8,7 +8,7 @@
   },
   {
    "path": "@HOME@",
-   "label": "Home",
+   "label": "nkaet",
    "icon": ""
   },
   {
@@ -19,6 +19,11 @@
   {
    "path": "@HOME@/Projects",
    "label": "Projects",
+   "icon": ""
+  },
+  {
+   "path": "@HOME@/Documents/University/Assignments",
+   "label": "Assignments",
    "icon": ""
   },
   {
