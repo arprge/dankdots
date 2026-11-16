@@ -13,7 +13,7 @@ environment {
 
 gestures {
     hot-corners {
-        top-left
+        bottom-left
     }
 }
 
@@ -355,6 +355,11 @@ include optional=true "dms/cursor.kdl"
 include "dms/input.kdl"
 include "dms/windowrules.kdl"
 
+window-rule {
+    match app-id=r#"^com\.ayugram\.desktop$"#
+    draw-border-with-background true
+}
+
 binds {
     Print { spawn "dms" "screenshot" "--no-notify"; }
     Mod+MouseBack { focus-column-left; }
@@ -386,7 +391,7 @@ layout {
     // background-color "transparent"
     focus-ring {
         // Managed by dms/layout.kdl.
-        width 1.5
+        width 1.8
         active-gradient from="#244a38" to="#20403a" angle=45 relative-to="workspace-view" in="oklch longer hue"
         inactive-color "#222222"
     }
@@ -394,9 +399,10 @@ layout {
     preset-column-widths {
         proportion 0.37
         proportion 0.5
-        proportion 0.86777
+        proportion 0.63
+        proportion 0.87
     }
-    default-column-width { proportion 0.8; }
+    default-column-width { proportion 0.63; }
     // By default focus ring and border are rendered as a solid background rectangle
     // behind windows. That is, they will show up through semitransparent windows.
     // This is because windows using client-side decorations can have an arbitrary shape.
@@ -410,7 +416,7 @@ layout {
     border {
         // Managed by dms/layout.kdl and dms/colors.kdl.
         // off
-        width 1.5
+        width 1.6
         active-color   "#3a3a3a"
         inactive-color "#222222"
         // urgent-color   "#cc4444"

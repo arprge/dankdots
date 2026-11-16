@@ -665,7 +665,7 @@
       }
     }
   ],
-  "radiusStrength": 50,
+  "radiusStrength": 30,
   "animationDuration": 247,
   "lockScreenShowWeather": false,
   "dockConfigs": [
@@ -696,7 +696,7 @@
       "showEditWidgetsInContextMenu": true,
       "showOnFullscreen": false,
       "openOnOverview": true,
-      "groupByApp": true,
+      "groupByApp": false,
       "separatePinnedAndRunningApps": false,
       "restoreSpecialWorkspaceOnClick": false,
       "isolateDisplays": false,
@@ -1039,7 +1039,7 @@
   "dankLauncherV2BorderEnabled": true,
   "dankLauncherV2BorderThickness": 1,
   "dankLauncherV2BorderColor": "primary",
-  "niriLayoutRadiusOverride": -1,
+  "niriLayoutRadiusOverride": 7,
   "dankLauncherV2ShowFooter": false,
   "appLauncherGridColumns": 4,
   "spotlightSectionViewModes": {
