@@ -75,41 +75,165 @@ animations {
         "#
     }
     window-close {
-        duration-ms 190
+        duration-ms 230
         curve "linear"
         custom-shader r#"
+            float melt_hash(vec2 p) {
+                p = fract(p * vec2(123.34, 456.21));
+                p += dot(p, p + 45.32);
+                return fract(p.x * p.y);
+            }
+
+            float melt_noise(vec2 p) {
+                vec2 i = floor(p);
+                vec2 f = fract(p);
+                vec2 u = f * f * (3.0 - 2.0 * f);
+                return mix(mix(melt_hash(i), melt_hash(i + vec2(1.0, 0.0)), u.x),
+                           mix(melt_hash(i + vec2(0.0, 1.0)), melt_hash(i + vec2(1.0, 1.0)), u.x), u.y);
+            }
+
+            // remaining glass: thins from the window's own rounded edges, unevenly
+            float melt_height(vec2 px, vec2 size, float melt, float seed) {
+                vec2 q = abs(px - 0.5 * size) - 0.5 * size + 16.0;
+                float inside = -(length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - 16.0);
+                float edge = clamp(inside / 160.0, 0.0, 1.0);
+                vec2 np = px / 260.0 + seed * 37.0;
+                float n = 0.65 * melt_noise(np) + 0.35 * melt_noise(np * 2.1 + 5.3);
+                return 0.55 * sqrt(edge) + 0.45 * n - melt;
+            }
+
+            vec4 melt_tex(vec2 uv) {
+                return texture2D(niri_tex, (niri_geo_to_tex * vec3(clamp(uv, 0.0, 1.0), 1.0)).st);
+            }
+
             vec4 close_color(vec3 coords_geo, vec3 size_geo) {
-                if (coords_geo.x < 0.0 || coords_geo.x > 1.0 || coords_geo.y < 0.0 || coords_geo.y > 1.0)
+                vec2 g = coords_geo.xy;
+                if (g.x < 0.0 || g.x > 1.0 || g.y < 0.0 || g.y > 1.0)
                     return vec4(0.0);
+
                 float p = niri_clamped_progress;
-                float e = clamp(p / 0.90, 0.0, 1.0);
-                float cx = coords_geo.x * 2.0 - 1.0;
-                float bell = 0.5 + 0.5 * cos(3.14159 * cx);
-                float wave = sin(3.14159 * e);
-                float sag = (0.25 * bell + 0.025 * cos(6.28318 * cx)) * wave;
-                float h = clamp((1.0 - e) * (1.0 - 0.35 * bell * wave) - sag * 0.65, 0.0, 1.0);
-                float top = 1.0 - h;
-                float y = coords_geo.y;
-                if (y < top || h <= 0.001)
+                float seed = niri_random_seed;
+                vec2 sz = size_geo.xy;
+                vec2 px = g * sz;
+
+                float m = mix(-0.06, 1.02, p * p * (1.6 - 0.6 * p));
+                float h = melt_height(px, sz, m, seed);
+                if (h <= 0.0)
                     return vec4(0.0);
-                float d = (y - top) * size_geo.y;
-                float v = 1.0 - (1.0 - y) / max(h, 0.18) * mix(1.0, 0.45, e);
-                float meniscus = exp(-d / 24.0);
-                v -= meniscus * 0.085 * wave;
-                float u = (coords_geo.x - 0.5) / mix(1.0, 0.96, e) + 0.5 + cx * meniscus * 0.022 * wave;
-                if (u < 0.0 || u > 1.0)
+
+                vec2 gh = vec2(
+                    melt_height(px + vec2(2.0, 0.0), sz, m, seed) - melt_height(px - vec2(2.0, 0.0), sz, m, seed),
+                    melt_height(px + vec2(0.0, 2.0), sz, m, seed) - melt_height(px - vec2(0.0, 2.0), sz, m, seed)) * 0.25;
+
+                float onset = smoothstep(0.0, 0.2, p);
+                float thin = (1.0 - smoothstep(0.0, 0.3, h)) * onset;
+
+                // thin glass bends and diffuses the window's own pixels
+                vec2 uv = g + gh * thin * 900.0 / sz;
+                vec2 rad = vec2(onset * 2.0 + thin * 9.0) / sz;
+                float rot = seed * 6.28318;
+                vec4 color = melt_tex(uv);
+                for (int i = 0; i < 8; i++) {
+                    float fi = float(i);
+                    float a = fi * 2.39996 + rot;
+                    color += melt_tex(uv + vec2(cos(a), sin(a)) * sqrt((fi + 0.5) / 8.0) * rad);
+                }
+                color /= 9.0;
+
+                // wet edge catches light in the window's own colors
+                color.rgb *= 1.0 + 0.25 * exp(-h / 0.03) * onset;
+
+                float edge = smoothstep(0.0, 0.08, h);
+                float fade = 1.0 - smoothstep(0.85, 1.0, p);
+                return color * mix(1.0, edge, onset) * mix(1.0, 0.6, thin) * fade;
+            }
+        "#
+    }
+    // Melt downward (disabled)
+    /-window-close {
+        duration-ms 220
+        curve "linear"
+        custom-shader r#"
+            float melt_front(float cx, float e, float seed) {
+                float s = seed * 6.28318;
+                float amp = 0.05 * sin(3.14159 * e) + 0.01;
+                float wob = 0.55 * sin(cx * 2.1 + s + e * 1.3)
+                          + 0.30 * sin(cx * 4.7 + s * 1.7 - e * 2.0)
+                          + 0.15 * sin(cx * 9.3 + s * 2.3);
+                float corner = 0.12 * pow(abs(cx), 3.0) * sin(3.14159 * min(e * 1.4, 1.0));
+                return mix(-0.14, 1.08, e) + amp * wob + corner;
+            }
+
+            vec4 melt_tex(vec2 uv) {
+                return texture2D(niri_tex, (niri_geo_to_tex * vec3(clamp(uv, 0.0, 1.0), 1.0)).st);
+            }
+
+            vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+                vec2 g = coords_geo.xy;
+                if (g.x < 0.0 || g.x > 1.0 || g.y < 0.0 || g.y > 1.0)
                     return vec4(0.0);
-                vec2 uv = vec2(u, clamp(v, 0.0, 1.0));
-                vec2 ca = vec2(cx * 0.004, 0.009) * meniscus * (0.4 + 0.6 * wave);
-                vec4 col_g = texture2D(niri_tex, (niri_geo_to_tex * vec3(uv, 1.0)).st);
-                float col_r = texture2D(niri_tex, (niri_geo_to_tex * vec3(clamp(uv + ca, 0.0, 1.0), 1.0)).st).r;
-                float col_b = texture2D(niri_tex, (niri_geo_to_tex * vec3(clamp(uv - ca, 0.0, 1.0), 1.0)).st).b;
-                vec4 color = vec4(col_r, col_g.g, col_b, col_g.a);
-                float rim = exp(-d / 3.2) * (1.0 - exp(-d / 1.0)) * 0.24 * (0.35 + 0.65 * wave);
-                color.rgb += vec3(rim) * color.a;
-                float edge = smoothstep(0.0, 2.0, d);
-                float alpha = 1.0 - smoothstep(0.80, 1.0, p);
-                return color * edge * alpha;
+
+                // resists briefly, then accelerates under gravity
+                float p = niri_clamped_progress;
+                float e = p * p * (1.6 - 0.6 * p);
+                float seed = niri_random_seed;
+
+                float cx = g.x * 2.0 - 1.0;
+                float band = mix(0.10, 0.28, e);
+                float front = melt_front(cx, e, seed);
+                if (g.y < front)
+                    return vec4(0.0);
+
+                // glass thickness: 0 at the melt front, 1 where still solid
+                float s = clamp((g.y - front) / band, 0.0, 1.0);
+                float thick = s * s * (3.0 - 2.0 * s);
+                float melt = 1.0 - thick;
+
+                float inset = melt * melt * 0.10 * sin(3.14159 * e);
+                float side_px = (1.0 - abs(cx) - inset) * 0.5 * size_geo.x;
+                if (side_px < 0.0)
+                    return vec4(0.0);
+
+                // heightfield slope drives refraction, dispersion and specular
+                float dfdx = (melt_front(cx + 0.01, e, seed) - melt_front(cx - 0.01, e, seed)) * 50.0;
+                float dts = 6.0 * s * (1.0 - s) / band;
+                vec2 grad = vec2(-dfdx * 2.0 * dts / size_geo.x, dts / size_geo.y) * 120.0;
+                vec3 n = normalize(vec3(-grad, 1.0));
+
+                vec2 refr = -grad * 14.0 / size_geo.xy;
+                float drag = pow(melt, 1.5) * e * 70.0 / size_geo.y;
+                vec2 uv = g + refr - vec2(0.0, drag);
+
+                vec4 base = melt_tex(uv);
+                vec2 ca = refr * 0.35;
+                vec4 sharp = vec4(melt_tex(uv + ca).r, base.g, melt_tex(uv - ca).b, base.a);
+
+                // frost: light haze on the solid slab, heavy diffusion + streak in the melt zone
+                float frost = clamp(0.30 * smoothstep(0.15, 0.75, e) + melt * 0.85, 0.0, 1.0);
+                vec2 rad = vec2(frost * 8.0) / size_geo.xy;
+                vec2 streak = vec2(0.0, -drag * 0.8);
+                float rot = seed * 6.28318;
+                vec4 blur = base;
+                for (int i = 0; i < 8; i++) {
+                    float fi = float(i);
+                    float a = fi * 2.39996 + rot;
+                    vec2 o = vec2(cos(a), sin(a)) * sqrt((fi + 0.5) / 8.0) * rad + streak * (fi / 7.0);
+                    blur += melt_tex(uv + o);
+                }
+                blur /= 9.0;
+
+                vec4 color = mix(sharp, blur, smoothstep(0.0, 0.6, frost));
+                color.rgb = mix(color.rgb, color.rgb * 0.9 + vec3(0.08) * color.a, frost * 0.6);
+
+                float edge_px = (g.y - front) * size_geo.y;
+                float spec = pow(max(dot(n, vec3(-0.2, -0.43, 0.88)), 0.0), 48.0);
+                float rim = exp(-edge_px / 2.5) * 0.35 * melt;
+                color.rgb += (spec * 0.55 + rim) * color.a;
+
+                float aa = clamp(edge_px / 1.5, 0.0, 1.0);
+                aa *= mix(1.0, clamp(side_px / 1.5, 0.0, 1.0), step(0.0005, inset));
+                float fade = 1.0 - smoothstep(0.88, 1.0, p);
+                return color * aa * mix(0.6, 1.0, thick) * fade;
             }
         "#
     }

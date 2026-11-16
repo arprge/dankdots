@@ -120,6 +120,12 @@ window-rule {
     }
 }
 
+// @id=wr_1794774594472860690 @name=com.ayugram.desktop
+window-rule {
+    match app-id="^com.ayugram.desktop$"
+    default-column-width { proportion 0.75; }
+}
+
 // @id=dms-window-opaque @name=DMS Window Opaque
 window-rule {
     match app-id="^(dev\\.duxlabs\\.shell|com\\.danklinux\\.dms)$"
