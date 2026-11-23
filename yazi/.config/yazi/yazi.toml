@@ -4,23 +4,19 @@ max_height = 1600
 image_quality = 90
 
 [opener]
-# Terminal editor, so it must block yazi while it runs. `$@` expands to every
-# selected file, which micro opens as one buffer/tab each.
 micro = [
-	{ run = 'micro "$@"', desc = "Micro", block = true },
+	{ run = 'micro %s', block = true, desc = "micro" },
 ]
 
-# Kept available as an explicit alternative; no longer used by the rules below.
+# Include notepad
 notepad = [
 	{ run = 'for f in %s; do dms ipc call notepad openFile "$f"; done', desc = "DMS Notepad", orphan = true },
 ]
 
 [open]
-# Prepended to the default rules, so folders keep entering normally. Text and
-# code files open in micro; "edit" ($EDITOR) stays as the fallback.
 prepend_rules = [
-	{ mime = "text/*", use = [ "micro", "edit" ] },
-	{ mime = "application/{json,ndjson,xml,yaml,toml,javascript,x-shellscript,wine-extension-ini}", use = [ "micro", "edit" ] },
-	{ mime = "inode/empty", use = [ "micro", "edit" ] },
+	{ mime = "text/*", use = [ "micro", "notepad", "edit" ] },
+	{ mime = "application/{json,ndjson,xml,yaml,toml,javascript,x-shellscript,wine-extension-ini}", use = [ "micro", "notepad", "edit" ] },
+	{ mime = "inode/empty", use = [ "micro", "notepad", "edit" ] },
 ]
 

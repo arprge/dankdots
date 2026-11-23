@@ -7,6 +7,7 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "cursor_shape": "bar",
   "icon_theme": "Zed (Default)",
   "inline_code_actions": true,
   "vertical_scroll_margin": 3.0,
@@ -78,7 +79,7 @@
   },
   "show_wrap_guides": true,
   "cursor_animation": {
-    "enabled": true,
+    "enabled": false,
   },
   "agent_buffer_font_size": 16.0,
   "agent": {
@@ -155,7 +156,7 @@
   ],
   "buffer_font_family": "Google Sans Code",
   "file_scan_exclusions": ["LICENSE", "README.md", "..."],
-  "semantic_tokens": "full",
+  "semantic_tokens": "combined",
   "format_on_save": "on",
   "soft_wrap": "editor_width",
   "base_keymap": "VSCode",
@@ -163,8 +164,8 @@
   "buffer_font_size": 15.5,
   "theme": {
     "mode": "dark",
-    "light": "Ayu Light",
-    "dark": "Gruvbox Dark",
+    "light": "JetBrains Islands Light",
+    "dark": "Gruvbox Dark Hard",
   },
   "lsp": {
     "clangd": {

@@ -39,20 +39,6 @@ window-rule {
     open-maximized-to-edges true
 }
 
-// @id=wr_1792692756458252109 @name=dev.duxlabs.files
-window-rule {
-    match app-id="^dev.duxlabs.files$"
-    opacity 0.85
-    open-floating true
-    default-column-width { proportion 0.85; }
-    default-window-height { proportion 0.92; }
-    variable-refresh-rate true
-    background-effect {
-        blur true
-        xray true
-    }
-}
-
 // @id=wr_1792867023504263549 @name=org.qbittorrent.qBittorrent
 window-rule {
     match app-id="^org.qbittorrent.qBittorrent$"
@@ -124,6 +110,18 @@ window-rule {
 window-rule {
     match app-id="^com.ayugram.desktop$"
     default-column-width { proportion 0.75; }
+}
+
+// @id=wr_1795005619506405532 @name=dev.duxlabs.files
+window-rule {
+    match app-id="^dev.duxlabs.files$"
+    opacity 0.91
+    default-column-width { proportion 0.48; }
+    background-effect {
+        blur true
+        xray true
+        noise 0.02
+    }
 }
 
 // @id=dms-window-opaque @name=DMS Window Opaque

@@ -193,3 +193,4 @@ export PATH="/home/nkaet/.local/bin:$PATH"
 
 #micro
 export MICRO_TRUECOLOR=1
+export PATH="$HOME/.cargo/bin:$PATH"

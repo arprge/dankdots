@@ -12,11 +12,6 @@
    "icon": ""
   },
   {
-   "path": "@HOME@/Desktop",
-   "label": "Desktop",
-   "icon": ""
-  },
-  {
    "path": "@HOME@/Projects",
    "label": "Projects",
    "icon": ""
@@ -44,6 +39,11 @@
   {
    "path": "@HOME@/Pictures",
    "label": "Pictures",
+   "icon": ""
+  },
+  {
+   "path": "@HOME@/Pictures/Screenshots",
+   "label": "Screenshots",
    "icon": ""
   },
   {

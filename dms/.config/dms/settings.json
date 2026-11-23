@@ -5,8 +5,8 @@
   "registryThemeVariants": {
     "gruvboxMulti": {
       "dark": {
-        "flavor": "material-hard-dark",
-        "accent": "blue"
+        "flavor": "classic-medium-light",
+        "accent": "green"
       },
       "light": {
         "flavor": "material-hard-light",
@@ -75,18 +75,18 @@
   "notepadLastCustomTransparency": 0.88,
   "notepadUseCompositorGap": true,
   "acMonitorTimeout": 600,
-  "acLockTimeout": 600,
+  "acLockTimeout": 900,
   "acSuspendTimeout": 1200,
   "acProfileName": "1",
-  "acPostLockMonitorTimeout": 30,
+  "acPostLockMonitorTimeout": 15,
   "batteryMonitorTimeout": 120,
   "batteryLockTimeout": 180,
   "batterySuspendTimeout": 600,
   "batteryPostLockMonitorTimeout": 15,
-  "batteryChargeLimit": 85,
+  "batteryChargeLimit": 88,
   "batteryNotifyChargeLimit": true,
   "batteryCriticalThreshold": 18,
-  "batteryLowThreshold": 32,
+  "batteryLowThreshold": 33,
   "batteryCriticalNotificationType": 0,
   "batteryAutoPowerSaver": true,
   "lockBeforeSuspend": true,
@@ -106,7 +106,7 @@
   },
   "lockScreenShowPowerActions": false,
   "enableFprint": true,
-  "lockScreenWallpaperPath": "@HOME@/Pictures/Wallpapers/The_Martyrdom_of_St._Agnes_in_the_Roman_Forum-saturation_0.47-color_temperature_7000.png",
+  "lockScreenWallpaperPath": "@HOME@/Pictures/Wallpapers/Niri cut.jxl",
   "lockScreenWallpaperFillMode": "Fill",
   "lockScreenFontFamily": "Oxanium",
   "notificationRules": [
@@ -122,7 +122,7 @@
   ],
   "notificationFocusedMonitor": true,
   "osdPowerProfileEnabled": true,
-  "updaterIntervalSeconds": 86400,
+  "updaterIntervalSeconds": 0,
   "screenPreferences": {
     "notifications": []
   },
@@ -153,7 +153,8 @@
           "showWorkspaceApps": false,
           "maxWorkspaceIcons": 3,
           "workspaceAppIconSizeOffset": 3,
-          "workspaceIndicatorRoundness": -1
+          "workspaceIndicatorRoundness": -1,
+          "showSpecialWorkspaces": true
         },
         {
           "id": "separator",
@@ -213,35 +214,44 @@
           "id": "keyboard_layout_name",
           "enabled": true,
           "keyboardLayoutNameCompactMode": true,
-          "keyboardLayoutNameShowIcon": false
+          "keyboardLayoutNameShowIcon": false,
+          "keyboardLayoutNameLabelOverrides": {
+            "en-US": "en",
+            "RU": "ru"
+          }
         },
-        "battery",
+        {
+          "id": "battery",
+          "enabled": true,
+          "showBatteryTime": false,
+          "showBatteryPercentOnlyOnBattery": false,
+          "showBatteryPowerCharging": false,
+          "showBatteryPowerDischarging": false,
+          "batteryStyle": "ring",
+          "showBatteryPercent": false,
+          "background": false
+        },
         {
           "id": "controlCenterButton",
           "enabled": true,
           "showMicPercent": true
-        },
-        {
-          "id": "network_speed_monitor",
-          "enabled": false,
-          "background": false
         }
       ],
       "spacing": 2,
       "innerPadding": -8,
-      "barInsetPadding": 5,
-      "barLengthPadding": 0,
+      "barInsetPadding": 6,
+      "barLengthPadding": 12,
       "bottomGap": 0,
       "attachToScreenEdge": true,
-      "transparency": 0.92,
-      "widgetTransparency": 0,
+      "transparency": 0.86,
+      "widgetTransparency": 0.81,
       "squareCorners": false,
       "noBackground": false,
       "maximizeWidgetIcons": false,
       "maximizeWidgetText": false,
-      "widgetPadding": 5,
-      "batteryColorMode": "theme",
-      "gothCornersEnabled": false,
+      "widgetPadding": 7,
+      "batteryColorMode": "level",
+      "gothCornersEnabled": true,
       "gothCornerRadiusOverride": false,
       "gothCornerRadiusValue": 12,
       "borderEnabled": true,
@@ -249,11 +259,11 @@
       "borderOpacity": 0.02,
       "borderThickness": 1,
       "widgetOutlineEnabled": false,
-      "widgetOutlineColor": "surfaceText",
-      "widgetOutlineOpacity": 0.02,
+      "widgetOutlineColor": "secondary",
+      "widgetOutlineOpacity": 0.22,
       "widgetOutlineThickness": 1,
       "fontScale": 1.15,
-      "iconScale": 1.24,
+      "iconScale": 1.22,
       "autoHide": false,
       "autoHideStrict": false,
       "autoHideDelay": 250,
@@ -284,7 +294,9 @@
       "widgetFollowInterfaceStyle": true,
       "widgetStyle": "flat",
       "islandSatelliteGap": 8,
-      "barLengthMode": "full"
+      "barLengthMode": "full",
+      "dot": false,
+      "connectedPopouts": false
     },
     {
       "id": "dot1792405993050",
@@ -483,7 +495,7 @@
   "frameThickness": 6,
   "frameRounding": 14,
   "frameBarSize": 26,
-  "configVersion": 44,
+  "configVersion": 47,
   "lockScreenWidgetInstances": [
     {
       "id": "lock_clock",
@@ -494,9 +506,9 @@
           "all"
         ],
         "syncPositionAcrossScreens": true,
-        "style": "digital",
+        "style": "expressive",
         "transparency": 0,
-        "weight": 700,
+        "weight": 500,
         "twoTone": false,
         "showDate": true,
         "showDigitalSeconds": false,
@@ -505,7 +517,7 @@
         "autoPosition": false,
         "colorMode": "default",
         "customColor": "#ffffff",
-        "fontFamily": "Google Sans Flex"
+        "fontFamily": "STIX"
       }
     },
     {
@@ -531,9 +543,9 @@
           "all"
         ],
         "syncPositionAcrossScreens": true,
-        "style": "expressive",
-        "profileVisibility": "never",
-        "passwordVisibility": "always"
+        "style": "pill",
+        "profileVisibility": "typing",
+        "passwordVisibility": "typing"
       }
     },
     {
@@ -666,7 +678,6 @@
     }
   ],
   "radiusStrength": 30,
-  "animationDuration": 247,
   "lockScreenShowWeather": false,
   "dockConfigs": [
     {
@@ -698,6 +709,7 @@
       "openOnOverview": true,
       "groupByApp": false,
       "separatePinnedAndRunningApps": false,
+      "showRunningApps": true,
       "restoreSpecialWorkspaceOnClick": false,
       "isolateDisplays": false,
       "indicatorStyle": "line",
@@ -841,15 +853,6 @@
       "row": 0
     },
     {
-      "id": "lock",
-      "enabled": true,
-      "w": 1,
-      "h": 1,
-      "small": true,
-      "col": 6,
-      "row": 0
-    },
-    {
       "id": "power",
       "enabled": true,
       "w": 1,
@@ -862,7 +865,7 @@
       "id": "brightnessSlider",
       "enabled": true,
       "w": 4,
-      "h": 1,
+      "h": 1.5,
       "col": 0,
       "row": 1
     },
@@ -870,7 +873,7 @@
       "id": "volumeSlider",
       "enabled": true,
       "w": 4,
-      "h": 1,
+      "h": 1.5,
       "col": 4,
       "row": 1
     },
@@ -880,7 +883,7 @@
       "w": 4,
       "h": 1,
       "col": 0,
-      "row": 2
+      "row": 2.5
     },
     {
       "id": "bluetooth",
@@ -888,7 +891,7 @@
       "w": 4,
       "h": 1,
       "col": 4,
-      "row": 2
+      "row": 2.5
     },
     {
       "id": "audioOutput",
@@ -896,7 +899,7 @@
       "w": 4,
       "h": 1,
       "col": 0,
-      "row": 3
+      "row": 3.5
     },
     {
       "id": "audioInput",
@@ -904,7 +907,7 @@
       "w": 4,
       "h": 1,
       "col": 4,
-      "row": 3
+      "row": 3.5
     },
     {
       "id": "darkMode",
@@ -912,7 +915,7 @@
       "w": 2,
       "h": 1,
       "col": 0,
-      "row": 4,
+      "row": 4.5,
       "small": true
     },
     {
@@ -920,8 +923,8 @@
       "enabled": true,
       "w": 2,
       "h": 1,
-      "col": 2,
-      "row": 4,
+      "col": 4,
+      "row": 4.5,
       "small": true
     },
     {
@@ -929,17 +932,8 @@
       "enabled": true,
       "w": 2,
       "h": 1,
-      "col": 4,
-      "row": 4,
-      "small": true
-    },
-    {
-      "id": "idleInhibitor",
-      "enabled": true,
-      "w": 2,
-      "h": 1,
-      "col": 6,
-      "row": 4,
+      "col": 2,
+      "row": 4.5,
       "small": true
     },
     {
@@ -949,6 +943,24 @@
       "h": 1,
       "small": true,
       "col": 4,
+      "row": 0
+    },
+    {
+      "id": "idleInhibitor",
+      "enabled": true,
+      "w": 2,
+      "h": 1,
+      "col": 6,
+      "row": 4.5,
+      "small": true
+    },
+    {
+      "id": "lock",
+      "enabled": true,
+      "w": 1,
+      "h": 1,
+      "small": true,
+      "col": 6,
       "row": 0
     }
   ],
@@ -1053,5 +1065,27 @@
   "mangoLayoutBorderSize": -1,
   "connectedFrameBarStyleBackups": {},
   "frameEnabled": false,
-  "focusFollowsMouse": 1
+  "focusFollowsMouse": 1,
+  "controlCenterColumns": 8,
+  "barInsetPaddingSyncAll": false,
+  "motionDuration": 0,
+  "reduceMotion": false,
+  "lockAtStartup": true,
+  "lockScreenPowerOffMonitorsOnLock": true,
+  "osdKeyboardLayoutEnabled": true,
+  "osdPositionOverrides": {
+    "airplaneMode": 0,
+    "audioOutput": 3,
+    "powerProfile": 0,
+    "doNotDisturb": 2,
+    "brightness": 4,
+    "mic": 2,
+    "idleInhibitor": 7,
+    "capsLock": 6,
+    "workspace": 2,
+    "keyboardLayout": 6
+  },
+  "osdDoNotDisturbEnabled": true,
+  "osdWorkspaceEnabled": false,
+  "iconFolderRecolor": true
 }

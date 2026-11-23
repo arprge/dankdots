@@ -54,23 +54,33 @@ animations {
         spring damping-ratio=0.80 stiffness=523 epsilon=0.0001
     }
     window-open {
-        duration-ms 300
+        duration-ms 285
         curve "ease-out-cubic"
         custom-shader r#"
             vec4 open_color(vec3 coords_geo, vec3 size_geo) {
                 float p = niri_clamped_progress;
+                if (p <= 0.0)
+                    return vec4(0.0);
+
                 float inv = 1.0 - p;
-                vec2 c = (coords_geo.xy - 0.5) / mix(0.94, 1.0, p);
-                float r2 = dot(c, c) * 4.0;
-                c *= 1.0 - inv * 0.10 * r2;
+                vec2 c = (coords_geo.xy - 0.5) / (1.0 - 0.06 * inv);
+                c *= 1.0 - (0.4 * inv) * dot(c, c);
+
                 vec2 uv = c + 0.5;
                 if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)
                     return vec4(0.0);
-                vec2 ca = c * inv * 0.012;
-                vec4 g = texture2D(niri_tex, (niri_geo_to_tex * vec3(uv, 1.0)).st);
-                float r = texture2D(niri_tex, (niri_geo_to_tex * vec3(uv + ca, 1.0)).st).r;
-                float b = texture2D(niri_tex, (niri_geo_to_tex * vec3(uv - ca, 1.0)).st).b;
-                return vec4(r, g.g, b, g.a) * smoothstep(0.0, 0.5, p);
+
+                vec2 tex_uv = (niri_geo_to_tex * vec3(uv, 1.0)).st;
+                vec4 g = texture2D(niri_tex, tex_uv);
+                float fade = smoothstep(0.0, 0.5, p);
+
+                if (0.006 * inv * max(size_geo.x, size_geo.y) < 0.35)
+                    return g * fade;
+
+                vec2 tex_ca = (niri_geo_to_tex * vec3(c * (inv * 0.012), 0.0)).st;
+                float r = texture2D(niri_tex, tex_uv + tex_ca).r;
+                float b = texture2D(niri_tex, tex_uv - tex_ca).b;
+                return vec4(r, g.g, b, g.a) * fade;
             }
         "#
     }
@@ -92,7 +102,7 @@ animations {
                            mix(melt_hash(i + vec2(0.0, 1.0)), melt_hash(i + vec2(1.0, 1.0)), u.x), u.y);
             }
 
-            // remaining glass: thins from the window's own rounded edges, unevenly
+            // remaining glass: thins from the window's own rounded edges
             float melt_height(vec2 px, vec2 size, float melt, float seed) {
                 vec2 q = abs(px - 0.5 * size) - 0.5 * size + 16.0;
                 float inside = -(length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - 16.0);
@@ -140,100 +150,12 @@ animations {
                 }
                 color /= 9.0;
 
-                // wet edge catches light in the window's own colors
+                // edge light
                 color.rgb *= 1.0 + 0.25 * exp(-h / 0.03) * onset;
 
                 float edge = smoothstep(0.0, 0.08, h);
                 float fade = 1.0 - smoothstep(0.85, 1.0, p);
                 return color * mix(1.0, edge, onset) * mix(1.0, 0.6, thin) * fade;
-            }
-        "#
-    }
-    // Melt downward (disabled)
-    /-window-close {
-        duration-ms 220
-        curve "linear"
-        custom-shader r#"
-            float melt_front(float cx, float e, float seed) {
-                float s = seed * 6.28318;
-                float amp = 0.05 * sin(3.14159 * e) + 0.01;
-                float wob = 0.55 * sin(cx * 2.1 + s + e * 1.3)
-                          + 0.30 * sin(cx * 4.7 + s * 1.7 - e * 2.0)
-                          + 0.15 * sin(cx * 9.3 + s * 2.3);
-                float corner = 0.12 * pow(abs(cx), 3.0) * sin(3.14159 * min(e * 1.4, 1.0));
-                return mix(-0.14, 1.08, e) + amp * wob + corner;
-            }
-
-            vec4 melt_tex(vec2 uv) {
-                return texture2D(niri_tex, (niri_geo_to_tex * vec3(clamp(uv, 0.0, 1.0), 1.0)).st);
-            }
-
-            vec4 close_color(vec3 coords_geo, vec3 size_geo) {
-                vec2 g = coords_geo.xy;
-                if (g.x < 0.0 || g.x > 1.0 || g.y < 0.0 || g.y > 1.0)
-                    return vec4(0.0);
-
-                // resists briefly, then accelerates under gravity
-                float p = niri_clamped_progress;
-                float e = p * p * (1.6 - 0.6 * p);
-                float seed = niri_random_seed;
-
-                float cx = g.x * 2.0 - 1.0;
-                float band = mix(0.10, 0.28, e);
-                float front = melt_front(cx, e, seed);
-                if (g.y < front)
-                    return vec4(0.0);
-
-                // glass thickness: 0 at the melt front, 1 where still solid
-                float s = clamp((g.y - front) / band, 0.0, 1.0);
-                float thick = s * s * (3.0 - 2.0 * s);
-                float melt = 1.0 - thick;
-
-                float inset = melt * melt * 0.10 * sin(3.14159 * e);
-                float side_px = (1.0 - abs(cx) - inset) * 0.5 * size_geo.x;
-                if (side_px < 0.0)
-                    return vec4(0.0);
-
-                // heightfield slope drives refraction, dispersion and specular
-                float dfdx = (melt_front(cx + 0.01, e, seed) - melt_front(cx - 0.01, e, seed)) * 50.0;
-                float dts = 6.0 * s * (1.0 - s) / band;
-                vec2 grad = vec2(-dfdx * 2.0 * dts / size_geo.x, dts / size_geo.y) * 120.0;
-                vec3 n = normalize(vec3(-grad, 1.0));
-
-                vec2 refr = -grad * 14.0 / size_geo.xy;
-                float drag = pow(melt, 1.5) * e * 70.0 / size_geo.y;
-                vec2 uv = g + refr - vec2(0.0, drag);
-
-                vec4 base = melt_tex(uv);
-                vec2 ca = refr * 0.35;
-                vec4 sharp = vec4(melt_tex(uv + ca).r, base.g, melt_tex(uv - ca).b, base.a);
-
-                // frost: light haze on the solid slab, heavy diffusion + streak in the melt zone
-                float frost = clamp(0.30 * smoothstep(0.15, 0.75, e) + melt * 0.85, 0.0, 1.0);
-                vec2 rad = vec2(frost * 8.0) / size_geo.xy;
-                vec2 streak = vec2(0.0, -drag * 0.8);
-                float rot = seed * 6.28318;
-                vec4 blur = base;
-                for (int i = 0; i < 8; i++) {
-                    float fi = float(i);
-                    float a = fi * 2.39996 + rot;
-                    vec2 o = vec2(cos(a), sin(a)) * sqrt((fi + 0.5) / 8.0) * rad + streak * (fi / 7.0);
-                    blur += melt_tex(uv + o);
-                }
-                blur /= 9.0;
-
-                vec4 color = mix(sharp, blur, smoothstep(0.0, 0.6, frost));
-                color.rgb = mix(color.rgb, color.rgb * 0.9 + vec3(0.08) * color.a, frost * 0.6);
-
-                float edge_px = (g.y - front) * size_geo.y;
-                float spec = pow(max(dot(n, vec3(-0.2, -0.43, 0.88)), 0.0), 48.0);
-                float rim = exp(-edge_px / 2.5) * 0.35 * melt;
-                color.rgb += (spec * 0.55 + rim) * color.a;
-
-                float aa = clamp(edge_px / 1.5, 0.0, 1.0);
-                aa *= mix(1.0, clamp(side_px / 1.5, 0.0, 1.0), step(0.0005, inset));
-                float fade = 1.0 - smoothstep(0.88, 1.0, p);
-                return color * aa * mix(0.6, 1.0, thick) * fade;
             }
         "#
     }
@@ -294,11 +216,6 @@ window-rule {
     open-floating true
 }
 window-rule {
-    match app-id=r#"^steam$"# title=r#"^notificationtoasts_\d+_desktop$"#
-    default-floating-position x=10 y=10 relative-to="bottom-right"
-    open-focused false
-}
-window-rule {
     match app-id=r#"^org\.wezfurlong\.wezterm$"#
     match app-id="Alacritty"
     match app-id="zen"
@@ -314,19 +231,10 @@ window-rule {
 window-rule {
     match app-id="kitty-yazi"
     default-column-width { fixed 900; }
-}
-
-// Steam main client: keep tiled.
-window-rule {
-    match app-id="^steam$"
-    open-floating false
-}
-
-// Steam notifications: position at bottom-right.
-window-rule {
-    match app-id="^steam$" title=r#"^notificationtoasts_\d+_desktop$"#
-
-    default-floating-position x=10 y=10 relative-to="bottom-right"
+    background-effect {
+      blur true
+      xray true
+    }
 }
 
 // ---------------
@@ -393,7 +301,7 @@ layout {
         // Managed by dms/layout.kdl.
         width 1.8
         active-gradient from="#244a38" to="#20403a" angle=45 relative-to="workspace-view" in="oklch longer hue"
-        inactive-color "#222222"
+        inactive-color "#434b48"
     }
     center-focused-column "never"
     preset-column-widths {
@@ -417,8 +325,8 @@ layout {
         // Managed by dms/layout.kdl and dms/colors.kdl.
         // off
         width 1.6
-        active-color   "#3a3a3a"
-        inactive-color "#222222"
+        active-color   "#234539"
+        inactive-color "#434b48"
         // urgent-color   "#cc4444"
     }
     shadow {
@@ -428,5 +336,43 @@ layout {
         // Managed by dms/colors.kdl 
         // color "#0007"
     }
+}
+
+// ============================================================================
+// Steam & Steam Games Ruleset
+// ============================================================================
+
+// 1. Main Steam Client: Keep tiled (explicitly overrides any global float rules)
+window-rule {
+    match app-id=r#"^steam$"# title=r#"^[Ss]team$"#
+    open-floating false
+}
+
+// 2. Steam Sub-Windows (Friends List, Settings, Properties, Launchers): Float
+window-rule {
+    match app-id=r#"^steam$"#
+    exclude title=r#"^[Ss]team$"#
+    exclude title=r#"^notificationtoasts_\d+_desktop$"#
+    open-floating true
+}
+
+// 3. Steam Notification Toasts: Force float on top, pin to corner, never steal focus
+window-rule {
+    match app-id=r#"^steam$"# title=r#"^notificationtoasts_\d+_desktop$"#
+    open-floating true
+    open-focused false
+    default-floating-position x=10 y=10 relative-to="bottom-right"
+    focus-ring { off; }
+    border { off; }
+    block-out-from "screencast"
+}
+
+// 4. Steam Games (Proton / Wine & steam_app_*): Fullscreen, VRR, full opacity
+window-rule {
+    match app-id=r#"^steam_app_\d+$"#
+    open-floating false
+    open-fullscreen true
+    variable-refresh-rate true
+    opacity 1.0
 }
 
