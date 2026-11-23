@@ -64,7 +64,13 @@ def _title_from_folders(parts: list[str], details: _Details) -> str:
     """Look for the title in the parent folder, then the grandparent, then above ("Show/S04/OVA/")."""
     number = ""  # "Show/1/" is the season's number, unless it is all there is or the file says another ("86/")
     generic = None  # the title when no folder above names the show
-    for folder in reversed(parts[:-1][-3:]):
+    folders = parts[:-1]
+    # "/home/me/": a user's home folder is no title, nor is anything above it
+    for i, parent in enumerate(folders[:-1]):
+        if parent.strip().lower() in {"home", "users"}:
+            folders = folders[i + 2 :]
+            break
+    for folder in reversed(folders[-3:]):
         if re.fullmatch(r"\d|0\d", folder.strip()) and details.season in {None, int(folder)}:
             number = number or folder.strip()
             continue
@@ -166,11 +172,12 @@ def _unused_season_folder(parent: Release | None, grandparent: Release | None, r
     return (parent.season or 0) > 1 and bool(folder) and own.startswith(folder) and own != folder
 
 
-def parse_path(path: str) -> FileInfo:
+def parse_path(path: str, *, skip: bool = True) -> FileInfo:
     """Extract title, episode, year and format from a media path.
 
     Args:
         path (str): Path to the video, or the media title for streams.
+        skip (bool): Raise for files that aren't episodes to record, False to parse them anyway.
 
     Returns:
         FileInfo: What the path says about the media.
@@ -185,8 +192,8 @@ def parse_path(path: str) -> FileInfo:
     parent = parse_release(parts[-2], folder=True) if len(parts) > 1 else None
     release = _named_special(release, parent) or release
     grandparent = parse_release(parts[-3], folder=True) if len(parts) > 2 else None
-    if skip := _skip_reason(release, parent, grandparent):
-        raise ParseError(f"'{name}' is {skip}. Not updating.")
+    if skip and (reason := _skip_reason(release, parent, grandparent)):
+        raise ParseError(f"'{name}' is {reason}. Not updating.")
 
     details = _Details(release.season, release.part, release.year, release.media_format)
     if parent and not parent.title:  # "OVA/", "Specials/"
