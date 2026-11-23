@@ -523,6 +523,30 @@ bootstrap_dux_stack() {
   fi
 }
 
+bootstrap_anilist_updater() {
+  section "Installing latest mpv-anilist-updater"
+  local installer_url="https://raw.githubusercontent.com/AzuredBlue/mpv-anilist-updater/main/installers/unix.sh"
+
+  if [[ "$DRY_RUN" == true ]]; then
+    info "[dry-run] would run the upstream installer: $installer_url"
+    return
+  fi
+
+  if ! command -v curl >/dev/null 2>&1; then
+    warn "curl not found; cannot install mpv-anilist-updater"
+    return
+  fi
+
+  # The dots link ~/.config/mpv, so always target that directory. Without this,
+  # the upstream installer prefers a Flatpak/Snap mpv config when one exists.
+  info "Fetching the latest release from GitHub..."
+  if MPV_CONFIG_DIR="${HOME}/.config/mpv" /bin/bash -c "$(curl -fsSL "$installer_url")"; then
+    ok "Installed latest mpv-anilist-updater"
+  else
+    warn "mpv-anilist-updater installation failed; mpv works without it"
+  fi
+}
+
 bootstrap_personal_apps() {
   section "Installing personal gaming apps (Lutris, ProtonPlus)"
 
@@ -667,12 +691,19 @@ main() {
   info "Repository: $REPO_DIR"
   info "Mode:       $MODE (dry-run=$DRY_RUN, personal=$PERSONAL)"
 
+  local pkg
+
   if [[ "$MODE" == "install" && "$SKIP_DEPS" == false ]]; then
     bootstrap_dux_stack
     local has_zsh=false
+    local has_mpv=false
     for pkg in "${packages[@]}"; do
       [[ "$pkg" == "zsh" ]] && has_zsh=true
+      [[ "$pkg" == "mpv" ]] && has_mpv=true
     done
+    if [[ "$has_mpv" == true ]]; then
+      bootstrap_anilist_updater
+    fi
     if [[ "$has_zsh" == true ]]; then
       bootstrap_zsh_deps
     fi
@@ -681,7 +712,6 @@ main() {
     fi
   fi
 
-  local pkg
   for pkg in "${packages[@]}"; do
     process_package "$pkg"
   done
