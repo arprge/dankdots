@@ -19,11 +19,13 @@
 
 ## What's in it
 
-- [niri](https://github.com/YaLTeR/niri) + [dux-shell](https://duxlabs.dev/) (`dms`, `dfiles`, `dsearch`, `dux-greeter`): bar, dock, spotlight launcher, notifications, clipboard, screen capture toolbar, and lock screen
-- my custom shader for window opening and closing animations, with liquid glass feel
-- one wallpaper palette via `matugen` across Kitty, Neovim (LazyVim), Micro, Zed, Zen, GTK 3/4, Qt (Darkly), btop, and cava
-- real background blur in Niri, borderless rounded windows, smooth spring animations, and native `dfiles` XDG file-picker portal
-- Kitty with cursor trail and powerline tabs, Zsh + customized Starship prompt, custom Fastfetch logo, bundled UI fonts (`Oxanium`, `Bodoni Moda`, `Roboto Flex`, `GoogleSansCode Nerd Font`), and curated wallpapers
+Built on top of [niri](https://github.com/YaLTeR/niri) and [dux-shell](https://duxlabs.dev/), with my own configs and tweaks:
+
+- **Custom Niri shaders & rules**: liquid-glass window open/close GLSL shaders, tuned blur and column proportions, and a dedicated Steam / Proton window ruleset
+- **Shell & theming extras**: tuned DMS layout and keybinds, `gruvboxMulti` theme, `materialPlayer` & `screenCaptureToolbar` plugins, `dfiles` as the XDG file-picker portal, Darkly Qt/GTK setup, and a custom `matugen` template for `micro`
+- **Terminal & shell**: Kitty with cursor trail and powerline tabs, Zsh + customized Starship prompt, custom Fastfetch logo, Yazi (`smart-enter`), and custom Cava shaders
+- **Editors & media**: LazyVim (`nvim`), `micro`, `zed`, and `mpv` configured with `modernz`, `thumbfast`, and `mpv-anilist-updater`
+- **Fonts & wallpapers**: bundled UI fonts (`Oxanium`, `Bodoni Moda`, `Roboto Flex`), `GoogleSansCode Nerd Font`, and curated wallpapers
 
 ## Install
 
