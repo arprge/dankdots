@@ -1,6 +1,6 @@
 [user]
 	email = 230161358+arprge@users.noreply.github.com
-	name = Alzhan Alan
+	name = Alan
 [credential "https://github.com"]
 	helper = 
 	helper = !/usr/bin/gh auth git-credential
