@@ -55,7 +55,7 @@ cd ~/dankdots
 | <kbd>Super</kbd>+<kbd>N</kbd> · <kbd>Super</kbd>+<kbd>V</kbd> | notifications · clipboard |
 | <kbd>Print</kbd> · <kbd>Super</kbd>+<kbd>Print</kbd> | screenshot · capture toolbar |
 | <kbd>Super</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd> · <kbd>Super</kbd>+<kbd>X</kbd> | lock screen · power menu |
-| <kbd>Super</kbd>+<kbd>Shift</kbd>+<kbd>/</kbd> | keybind cheat sheet |
+| <kbd>Super</kbd>+<kbd>?</kbd> | keybind cheat sheet |
 
 ## Packages
 
