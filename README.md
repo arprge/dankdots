@@ -1,4 +1,3 @@
-
 # dankdots
 
 **niri on fedora with dux shell and dynamic theming**
@@ -19,7 +18,7 @@
 
 ## What's in it
 
-- [niri](https://github.com/YaLTeR/niri) + **Dux shell** (`dms`, `dfiles`, `dsearch`, `dux-greeter`): bar, dock, spotlight launcher, notifications, clipboard, screen capture toolbar, and lock screen
+- [niri](https://github.com/YaLTeR/niri) + [dux-shell](https://duxlabs.dev/) (`dms`, `dfiles`, `dsearch`, `dux-greeter`): bar, dock, spotlight launcher, notifications, clipboard, screen capture toolbar, and lock screen
 - my custom shader for window opening and closing animations, with liquid glass feel
 - one wallpaper palette via `matugen` across Kitty, Neovim (LazyVim), Micro, Zed, Zen, GTK 3/4, Qt (Darkly), btop, and cava
 - real background blur in Niri, borderless rounded windows, smooth spring animations, and native `dfiles` XDG file-picker portal
