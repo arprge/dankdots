@@ -8,7 +8,8 @@
 
 <img width="1920" height="1080" alt="screenshot_2026-11-15_22-49-02" src="https://github.com/user-attachments/assets/c4fce994-2ae4-46c2-9eff-497ec28b726d" />
 <img width="1920" height="1080" alt="screenshot_2026-11-15_22-49-51" src="https://github.com/user-attachments/assets/ba1e4fd2-7b1c-4461-bda8-c45c429ef921" />
-<img width="1921" height="1080" alt="screenshot_2026-10-31_22-01-38" src="https://github.com/user-attachments/assets/58aaa34c-509b-42d4-8c18-ce419118c751" />
+<img width="1910" height="1080" alt="screenshot_2026-11-28_12-54-41" src="https://github.com/user-attachments/assets/6c3ebb30-fcb7-4ea0-869d-1294e2c78d74" />
+<img width="1920" height="1080" alt="screenshot_2026-11-28_12-53-41" src="https://github.com/user-attachments/assets/19d75799-7b4a-41e6-bfcc-5af9c79816e9" />
 
 #### Starship prompt:
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/85941f10-70be-44ad-96eb-d799b2668999" />
