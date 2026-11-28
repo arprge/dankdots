@@ -568,9 +568,9 @@ bootstrap_packages() {
     ok "Installed companion & CLI packages"
   fi
 
-  # Ensure standard directories referenced by niri/dsearch/dfiles exist
+  # Ensure screenshots directory referenced by niri exists
   if [[ "$DRY_RUN" == false ]]; then
-    mkdir -p -- "$HOME/Projects" "$HOME/Pictures/Screenshots"
+    mkdir -p -- "$HOME/Pictures/Screenshots"
   fi
 }
 
