@@ -632,7 +632,9 @@ bootstrap_anilist_updater() {
 }
 
 bootstrap_shared_proton() {
+  section "Shared Proton-CachyOS (Steam & Lutris)"
   local compat_dir="${HOME}/.local/share/Steam/compatibilitytools.d"
+  local target_dir="${compat_dir}/Proton-CachyOS Latest"
   local existing=""
   local dir
   for dir in "$compat_dir"/Proton-CachyOS* "$compat_dir"/proton-cachyos*; do
@@ -648,20 +650,26 @@ bootstrap_shared_proton() {
   fi
 
   if [[ "$DRY_RUN" == true ]]; then
-    info "[dry-run] would ask to install shared Proton-CachyOS into $compat_dir (used by Steam & Lutris)"
+    if [[ "$PERSONAL" == true ]]; then
+      info "[dry-run] would install shared Proton-CachyOS into $target_dir (used by Steam & Lutris)"
+    else
+      info "[dry-run] would ask to install shared Proton-CachyOS into $target_dir (used by Steam & Lutris)"
+    fi
     return
   fi
 
-  if [[ ! -t 0 ]]; then
-    info "Non-interactive shell; skipping shared Proton-CachyOS prompt"
-    return
-  fi
+  if [[ "$PERSONAL" == false ]]; then
+    if [[ ! -t 0 ]]; then
+      info "Non-interactive shell; skipping shared Proton-CachyOS prompt"
+      return
+    fi
 
-  local reply
-  read -r -p "Install latest Proton-CachyOS shared between Steam and Lutris? [Y/n] " reply
-  if [[ -n "$reply" && ! "$reply" =~ ^[Yy]$ ]]; then
-    info "Skipped shared Proton-CachyOS installation"
-    return
+    local reply
+    read -r -p "Install latest Proton-CachyOS shared between Steam and Lutris? [y/N] " reply
+    if [[ ! "$reply" =~ ^[Yy]$ ]]; then
+      info "Skipped shared Proton-CachyOS installation"
+      return
+    fi
   fi
 
   if ! command -v curl >/dev/null 2>&1 || ! command -v tar >/dev/null 2>&1; then
@@ -669,10 +677,10 @@ bootstrap_shared_proton() {
     return
   fi
 
-  local arch
+  local arch variant_id
   case "$(uname -m)" in
-    x86_64)  arch="x86_64" ;;
-    aarch64) arch="arm64" ;;
+    x86_64)  arch="x86_64"; variant_id="x86-64" ;;
+    aarch64) arch="arm64";  variant_id="arm64" ;;
     *)
       warn "Unsupported architecture $(uname -m) for Proton-CachyOS"
       return
@@ -681,8 +689,20 @@ bootstrap_shared_proton() {
 
   info "Fetching latest Proton-CachyOS release..."
   local repo_url="https://github.com/CachyOS/proton-cachyos"
-  local tag
-  tag="$(curl -fsSI "$repo_url/releases/latest" | tr -d '\r' | awk 'tolower($1) == "location:" { sub(".*/releases/tag/", "", $2); print $2 }')"
+  local api_url="https://api.github.com/repos/CachyOS/proton-cachyos/releases/latest"
+  local tag="" release_id=""
+
+  local api_json
+  api_json="$(curl -fsSL "$api_url" 2>/dev/null || true)"
+  if [[ -n "$api_json" ]]; then
+    tag="$(printf '%s\n' "$api_json" | sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1)"
+    release_id="$(printf '%s\n' "$api_json" | sed -n 's/^[[:space:]]*"id":[[:space:]]*\([0-9][0-9]*\).*/\1/p' | head -n 1)"
+  fi
+
+  if [[ -z "$tag" ]]; then
+    tag="$(curl -fsSI "$repo_url/releases/latest" | tr -d '\r' | awk 'tolower($1) == "location:" { sub(".*/releases/tag/", "", $2); print $2 }')"
+  fi
+
   if [[ -z "$tag" ]]; then
     warn "Could not resolve latest Proton-CachyOS release; install it via ProtonPlus instead"
     return
@@ -695,9 +715,26 @@ bootstrap_shared_proton() {
 
   info "Downloading ${asset}..."
   if curl -fL "$url" -o "${tmp_dir}/${asset}"; then
-    mkdir -p -- "$compat_dir"
-    if tar -xJf "${tmp_dir}/${asset}" -C "$compat_dir"; then
-      ok "Installed Proton-CachyOS (${tag}) into $compat_dir (shared by Steam & Lutris)"
+    mkdir -p -- "${tmp_dir}/extract" "$compat_dir"
+    if tar -xJf "${tmp_dir}/${asset}" -C "${tmp_dir}/extract"; then
+      local extracted
+      extracted="$(find "${tmp_dir}/extract" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+      if [[ -n "$extracted" ]]; then
+        # Match ProtonPlus's "Proton-CachyOS Latest" layout so Steam, Lutris, and ProtonPlus all see & manage it
+        if [[ -f "${extracted}/compatibilitytool.vdf" ]]; then
+          local orig_name
+          orig_name="$(basename "$extracted")"
+          sed -i "s|${orig_name}|Proton-CachyOS Latest|g" "${extracted}/compatibilitytool.vdf"
+        fi
+        if [[ -n "$release_id" ]]; then
+          printf '{"runner_endpoint":"https://api.github.com/repos/CachyOS/proton-cachyos/releases","runner_title":"Proton-CachyOS","tag":"%s","provider_id":"proton-cachyos","tool_id":"steam-system/proton/proton-cachyos","launcher_id":"steam-system","variant_id":"%s","release_id":"%s"}' \
+            "$tag" "$variant_id" "$release_id" >"${extracted}/.protonplus"
+        fi
+        mv -- "$extracted" "$target_dir"
+        ok "Installed Proton-CachyOS Latest (${tag}) into $target_dir (shared by Steam, Lutris & ProtonPlus)"
+      else
+        warn "Unexpected archive layout in ${asset}; install Proton-CachyOS via ProtonPlus instead"
+      fi
     else
       warn "Failed to extract ${asset}; install Proton-CachyOS via ProtonPlus instead"
     fi
@@ -725,8 +762,6 @@ bootstrap_personal_apps() {
     flatpak install -y flathub com.vysp3r.ProtonPlus
     ok "Installed ProtonPlus"
   fi
-
-  bootstrap_shared_proton
 }
 
 bootstrap_fonts() {
@@ -899,6 +934,9 @@ main() {
     fi
     if [[ "$PERSONAL" == true ]]; then
       bootstrap_personal_apps
+    fi
+    if [[ "$is_full_install" == true || "$PERSONAL" == true ]]; then
+      bootstrap_shared_proton
     fi
     if [[ "$has_desktop" == true ]]; then
       bootstrap_dux_services
