@@ -631,6 +631,83 @@ bootstrap_anilist_updater() {
   fi
 }
 
+bootstrap_shared_proton() {
+  local compat_dir="${HOME}/.local/share/Steam/compatibilitytools.d"
+  local existing=""
+  local dir
+  for dir in "$compat_dir"/Proton-CachyOS* "$compat_dir"/proton-cachyos*; do
+    if [[ -d "$dir" ]]; then
+      existing="$dir"
+      break
+    fi
+  done
+
+  if [[ -n "$existing" ]]; then
+    ok "Proton-CachyOS already installed ($existing) — shared by Steam & Lutris"
+    return
+  fi
+
+  if [[ "$DRY_RUN" == true ]]; then
+    info "[dry-run] would ask to install shared Proton-CachyOS into $compat_dir (used by Steam & Lutris)"
+    return
+  fi
+
+  if [[ ! -t 0 ]]; then
+    info "Non-interactive shell; skipping shared Proton-CachyOS prompt"
+    return
+  fi
+
+  local reply
+  read -r -p "Install latest Proton-CachyOS shared between Steam and Lutris? [Y/n] " reply
+  if [[ -n "$reply" && ! "$reply" =~ ^[Yy]$ ]]; then
+    info "Skipped shared Proton-CachyOS installation"
+    return
+  fi
+
+  if ! command -v curl >/dev/null 2>&1 || ! command -v tar >/dev/null 2>&1; then
+    warn "curl or tar not found; install Proton-CachyOS via ProtonPlus instead"
+    return
+  fi
+
+  local arch
+  case "$(uname -m)" in
+    x86_64)  arch="x86_64" ;;
+    aarch64) arch="arm64" ;;
+    *)
+      warn "Unsupported architecture $(uname -m) for Proton-CachyOS"
+      return
+      ;;
+  esac
+
+  info "Fetching latest Proton-CachyOS release..."
+  local repo_url="https://github.com/CachyOS/proton-cachyos"
+  local tag
+  tag="$(curl -fsSI "$repo_url/releases/latest" | tr -d '\r' | awk 'tolower($1) == "location:" { sub(".*/releases/tag/", "", $2); print $2 }')"
+  if [[ -z "$tag" ]]; then
+    warn "Could not resolve latest Proton-CachyOS release; install it via ProtonPlus instead"
+    return
+  fi
+
+  local asset="proton-${tag}-${arch}.tar.xz"
+  local url="${repo_url}/releases/download/${tag}/${asset}"
+  local tmp_dir
+  tmp_dir="$(mktemp -d)"
+
+  info "Downloading ${asset}..."
+  if curl -fL "$url" -o "${tmp_dir}/${asset}"; then
+    mkdir -p -- "$compat_dir"
+    if tar -xJf "${tmp_dir}/${asset}" -C "$compat_dir"; then
+      ok "Installed Proton-CachyOS (${tag}) into $compat_dir (shared by Steam & Lutris)"
+    else
+      warn "Failed to extract ${asset}; install Proton-CachyOS via ProtonPlus instead"
+    fi
+  else
+    warn "Failed to download ${url}; install Proton-CachyOS via ProtonPlus instead"
+  fi
+
+  rm -rf -- "$tmp_dir"
+}
+
 bootstrap_personal_apps() {
   section "Installing personal gaming apps (Lutris, ProtonPlus)"
 
@@ -638,10 +715,7 @@ bootstrap_personal_apps() {
 
   if ! command -v flatpak >/dev/null 2>&1; then
     warn "flatpak not found; cannot install ProtonPlus (com.vysp3r.ProtonPlus)"
-    return
-  fi
-
-  if flatpak info com.vysp3r.ProtonPlus >/dev/null 2>&1; then
+  elif flatpak info com.vysp3r.ProtonPlus >/dev/null 2>&1; then
     ok "ProtonPlus already installed (com.vysp3r.ProtonPlus)"
   elif [[ "$DRY_RUN" == true ]]; then
     info "[dry-run] would ensure flathub remote and run: flatpak install -y flathub com.vysp3r.ProtonPlus"
@@ -651,6 +725,8 @@ bootstrap_personal_apps() {
     flatpak install -y flathub com.vysp3r.ProtonPlus
     ok "Installed ProtonPlus"
   fi
+
+  bootstrap_shared_proton
 }
 
 bootstrap_fonts() {
