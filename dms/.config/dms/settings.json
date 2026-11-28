@@ -165,14 +165,46 @@
           "enabled": true
         },
         {
-          "id": "cpuUsage",
-          "enabled": true,
-          "minimumWidth": false
+          "id": "sysmon",
+          "enabled": false,
+          "overflowPriority": -4,
+          "popout": "processes",
+          "metrics": [
+            {
+              "device": "net",
+              "vals": [
+                "down",
+                "up"
+              ],
+              "compact": true
+            }
+          ]
         },
         {
-          "id": "cpuTemp",
+          "id": "sysmon",
           "enabled": true,
-          "minimumWidth": false
+          "popout": "processes",
+          "metrics": [
+            {
+              "device": "cpu",
+              "vals": [
+                "usage"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sysmon",
+          "enabled": true,
+          "popout": "processes",
+          "metrics": [
+            {
+              "device": "cpu",
+              "vals": [
+                "temp"
+              ]
+            }
+          ]
         },
         {
           "id": "runningApps",
@@ -224,11 +256,11 @@
           "id": "battery",
           "enabled": true,
           "showBatteryTime": false,
-          "showBatteryPercentOnlyOnBattery": false,
+          "showBatteryPercentOnlyOnBattery": true,
           "showBatteryPowerCharging": false,
           "showBatteryPowerDischarging": false,
-          "batteryStyle": "ring",
-          "showBatteryPercent": false,
+          "batteryStyle": "solid",
+          "showBatteryPercent": true,
           "background": false
         },
         {
@@ -250,7 +282,7 @@
       "maximizeWidgetIcons": false,
       "maximizeWidgetText": false,
       "widgetPadding": 7,
-      "batteryColorMode": "level",
+      "batteryColorMode": "theme",
       "gothCornersEnabled": true,
       "gothCornerRadiusOverride": false,
       "gothCornerRadiusValue": 12,
@@ -323,14 +355,30 @@
           "enabled": true
         },
         {
-          "id": "cpuUsage",
+          "id": "sysmon",
           "enabled": true,
-          "minimumWidth": false
+          "popout": "processes",
+          "metrics": [
+            {
+              "device": "cpu",
+              "vals": [
+                "usage"
+              ]
+            }
+          ]
         },
         {
-          "id": "cpuTemp",
+          "id": "sysmon",
           "enabled": true,
-          "minimumWidth": false
+          "popout": "processes",
+          "metrics": [
+            {
+              "device": "cpu",
+              "vals": [
+                "temp"
+              ]
+            }
+          ]
         },
         {
           "id": "runningApps",
@@ -495,7 +543,7 @@
   "frameThickness": 6,
   "frameRounding": 14,
   "frameBarSize": 26,
-  "configVersion": 47,
+  "configVersion": 49,
   "lockScreenWidgetInstances": [
     {
       "id": "lock_clock",
@@ -779,7 +827,7 @@
           "w": 2,
           "h": 2,
           "tone": "primary",
-          "city": false,
+          "city": true,
           "col": 0,
           "row": 0
         },
@@ -867,7 +915,8 @@
       "w": 4,
       "h": 1.5,
       "col": 0,
-      "row": 1
+      "row": 1,
+      "deviceName": "backlight:intel_backlight"
     },
     {
       "id": "volumeSlider",
@@ -994,11 +1043,27 @@
       "row": 3
     },
     {
-      "id": "memory",
+      "id": "sysmon",
       "w": 1,
       "h": 2,
       "col": 5,
-      "row": 3
+      "row": 3,
+      "instanceId": "memory-4",
+      "config": {
+        "layout": "tiles",
+        "style": "icon",
+        "graphInterval": 300,
+        "metrics": [
+          {
+            "device": "memory",
+            "vals": [
+              "used"
+            ],
+            "graph": true,
+            "on": true
+          }
+        ]
+      }
     },
     {
       "id": "user",
@@ -1008,11 +1073,28 @@
       "row": 0
     },
     {
-      "id": "disk",
+      "id": "sysmon",
       "w": 2,
       "h": 2,
       "col": 3,
-      "row": 3
+      "row": 3,
+      "instanceId": "disk-6",
+      "config": {
+        "layout": "tiles",
+        "style": "icon",
+        "graphInterval": 300,
+        "metrics": [
+          {
+            "device": "disk",
+            "vals": [
+              "space"
+            ],
+            "mount": "/",
+            "graph": true,
+            "on": true
+          }
+        ]
+      }
     }
   ],
   "bluetoothMprisEnabled": false,
@@ -1072,7 +1154,7 @@
   "reduceMotion": false,
   "lockAtStartup": true,
   "lockScreenPowerOffMonitorsOnLock": true,
-  "osdKeyboardLayoutEnabled": true,
+  "osdKeyboardLayoutEnabled": false,
   "osdPositionOverrides": {
     "airplaneMode": 0,
     "audioOutput": 3,
@@ -1083,9 +1165,21 @@
     "idleInhibitor": 7,
     "capsLock": 6,
     "workspace": 2,
-    "keyboardLayout": 6
+    "keyboardLayout": 0
   },
   "osdDoNotDisturbEnabled": true,
   "osdWorkspaceEnabled": false,
-  "iconFolderRecolor": true
+  "iconFolderRecolor": true,
+  "notepadShowLineNumbers": false,
+  "notepadTransparencyOverride": 0.88,
+  "weatherProviders": [
+    {
+      "id": "openmeteo",
+      "enabled": true
+    },
+    {
+      "id": "metno",
+      "enabled": true
+    }
+  ]
 }

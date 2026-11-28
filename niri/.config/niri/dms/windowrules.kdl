@@ -116,7 +116,7 @@ window-rule {
 window-rule {
     match app-id="^dev.duxlabs.files$"
     opacity 0.91
-    default-column-width { proportion 0.48; }
+    default-column-width { proportion 0.72; }
     background-effect {
         blur true
         xray true
