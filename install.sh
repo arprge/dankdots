@@ -373,7 +373,7 @@ process_package() {
     local dst="${HOME}/${rel}"
 
     # Skip hardware-specific monitor mode/scale (1080p@60Hz scale 1.4) unless --me is passed
-    if [[ "$MODE" == "install" && "$PERSONAL" == false && "$rel" == ".config/niri/dms/outputs.kdl" ]]; then
+    if [[ "$MODE" == "install" && "$PERSONAL" == false && ( "$rel" == ".config/niri/dms/outputs.kdl" || "$rel" == ".config/dms/monitors.json" ) ]]; then
       info "Skipping machine-specific display profile: $rel (pass --me to include)"
       continue
     fi
@@ -470,17 +470,64 @@ install_dnf_pkg() {
   fi
 }
 
-bootstrap_dux_stack() {
-  section "Installing Dux shell & desktop stack"
+bootstrap_dux_shell() {
+  section "Installing Dux shell (official installer)"
+  local installer_url="https://install.duxlabs.dev"
 
-  local stack_pkgs=(
-    niri xwayland-satellite
-    dms dms-cli dux-files dux-search dux-greeter matugen
+  if command -v dms >/dev/null 2>&1; then
+    ok "Dux shell already installed ($(command -v dms))"
+    return
+  fi
+
+  if [[ "$DRY_RUN" == true ]]; then
+    info "[dry-run] would run official Dux shell installer: $installer_url"
+    return
+  fi
+
+  if ! command -v curl >/dev/null 2>&1; then
+    if command -v dnf >/dev/null 2>&1; then
+      info "Installing curl via dnf..."
+      sudo dnf install -y curl
+    else
+      err "curl not found; install curl or run $installer_url manually first"
+      exit 1
+    fi
+  fi
+
+  info "Launching official Dux shell installer ($installer_url)..."
+  local tmp_installer
+  tmp_installer="$(mktemp)"
+  if ! curl -fsSL "$installer_url" -o "$tmp_installer"; then
+    rm -f -- "$tmp_installer"
+    err "Failed to download Dux shell installer ($installer_url)"
+    exit 1
+  fi
+
+  # Run from a file (not a pipe) so the interactive installer keeps full TTY access
+  local status=0
+  sh "$tmp_installer" || status=$?
+  rm -f -- "$tmp_installer"
+
+  if (( status != 0 )); then
+    err "Dux shell installer exited with status $status; stopping before linking configs"
+    exit "$status"
+  fi
+
+  hash -r
+  ok "Dux shell installation complete"
+}
+
+bootstrap_packages() {
+  section "Installing companion & CLI packages"
+
+  local extra_pkgs=(
+    dux-files dux-search
     zsh kitty neovim mpv fastfetch cava
     eza bat zoxide btop micro
     qt6ct adw-gtk3-theme papirus-icon-theme adwaita-sans-fonts
-    starship yazi darkly curl unzip fontconfig
+    curl unzip fontconfig
   )
+  local terra_pkgs=(starship yazi darkly)
 
   if ! command -v dnf >/dev/null 2>&1; then
     warn "dnf not found; skipping automatic Fedora package installation"
@@ -488,39 +535,76 @@ bootstrap_dux_stack() {
   fi
 
   local missing_pkgs=()
+  local missing_terra=false
   local pkg
-  for pkg in "${stack_pkgs[@]}"; do
+
+  for pkg in "${extra_pkgs[@]}"; do
     if ! rpm -q "$pkg" >/dev/null 2>&1; then
       missing_pkgs+=("$pkg")
     fi
   done
 
+  for pkg in "${terra_pkgs[@]}"; do
+    if ! rpm -q "$pkg" >/dev/null 2>&1; then
+      missing_pkgs+=("$pkg")
+      missing_terra=true
+    fi
+  done
+
   if (( ${#missing_pkgs[@]} == 0 )); then
-    ok "All Dux shell & desktop packages already installed"
+    ok "All companion & CLI packages already installed"
   elif [[ "$DRY_RUN" == true ]]; then
-    info "[dry-run] would enable COPR/Terra repos if missing and install: ${missing_pkgs[*]}"
+    if [[ "$missing_terra" == true ]] && ! rpm -q terra-release >/dev/null 2>&1; then
+      info "[dry-run] would enable Terra repository (for starship, yazi, darkly)"
+    fi
+    info "[dry-run] would run: sudo dnf install -y --skip-unavailable ${missing_pkgs[*]}"
   else
-    if [[ ! -f /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:duxlabs:dms-git.repo ]]; then
-      info "Enabling duxlabs/dms-git COPR repository..."
-      sudo dnf copr enable -y duxlabs/dms-git
-    fi
-    if [[ ! -f /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:ulysg:xwayland-satellite.repo ]]; then
-      info "Enabling ulysg/xwayland-satellite COPR repository..."
-      sudo dnf copr enable -y ulysg/xwayland-satellite
-    fi
-    if ! rpm -q terra-release >/dev/null 2>&1; then
+    if [[ "$missing_terra" == true ]] && ! rpm -q terra-release >/dev/null 2>&1; then
       info "Enabling Terra repository (for starship, yazi, darkly)..."
       sudo dnf install -y --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release || true
     fi
     info "Installing missing packages via dnf: ${missing_pkgs[*]}"
     sudo dnf install -y --skip-unavailable "${missing_pkgs[@]}"
-    ok "Installed Dux shell & desktop packages"
+    ok "Installed companion & CLI packages"
   fi
 
   # Ensure standard directories referenced by niri/dsearch/dfiles exist
   if [[ "$DRY_RUN" == false ]]; then
     mkdir -p -- "$HOME/Projects" "$HOME/Pictures/Screenshots"
   fi
+}
+
+bootstrap_dux_services() {
+  section "Enabling Dux companion services"
+
+  if ! command -v systemctl >/dev/null 2>&1; then
+    return
+  fi
+
+  if ! systemctl --user list-unit-files >/dev/null 2>&1; then
+    warn "systemd user session not available; enable companion services after login:"
+    info "  systemctl --user enable --now dfiles.service dsearch.service"
+    return
+  fi
+
+  local svc
+  for svc in dfiles.service dsearch.service; do
+    if ! systemctl --user list-unit-files "$svc" --no-legend 2>/dev/null | grep -q "^${svc}"; then
+      continue
+    fi
+
+    if systemctl --user is-enabled "$svc" >/dev/null 2>&1; then
+      ok "$svc already enabled"
+    elif [[ "$DRY_RUN" == true ]]; then
+      info "[dry-run] would run: systemctl --user enable $svc"
+    else
+      if systemctl --user enable "$svc" >/dev/null 2>&1; then
+        ok "Enabled $svc"
+      else
+        warn "Could not enable $svc; run: systemctl --user enable $svc"
+      fi
+    fi
+  done
 }
 
 bootstrap_anilist_updater() {
@@ -618,7 +702,7 @@ bootstrap_zsh_deps() {
 check_tools() {
   section "Checking recommended tools"
   local tools=(
-    zsh starship kitty nvim mpv dms niri
+    zsh starship kitty nvim mpv dms niri dfiles dsearch
     yazi fastfetch cava matugen eza bat zoxide btop micro
   )
   local missing=()
@@ -691,34 +775,61 @@ main() {
   info "Repository: $REPO_DIR"
   info "Mode:       $MODE (dry-run=$DRY_RUN, personal=$PERSONAL)"
 
-  local pkg
+  local is_full_install=false
+  (( ${#REQUESTED_PACKAGES[@]} == 0 )) && is_full_install=true
 
+  local has_dux=false
+  local has_desktop=false
+  local has_zsh=false
+  local has_mpv=false
+  local has_fonts=false
+  local pkg
+  for pkg in "${packages[@]}"; do
+    case "$pkg" in
+      dms|niri) has_dux=true ;;
+      desktop)  has_desktop=true ;;
+      zsh)      has_zsh=true ;;
+      mpv)      has_mpv=true ;;
+      fonts)    has_fonts=true ;;
+    esac
+  done
+
+  # 1. Native Dux shell installer & system packages (before linking configs so
+  #    upstream defaults are backed up and replaced cleanly by our dotfiles).
   if [[ "$MODE" == "install" && "$SKIP_DEPS" == false ]]; then
-    bootstrap_dux_stack
-    local has_zsh=false
-    local has_mpv=false
-    for pkg in "${packages[@]}"; do
-      [[ "$pkg" == "zsh" ]] && has_zsh=true
-      [[ "$pkg" == "mpv" ]] && has_mpv=true
-    done
-    if [[ "$has_mpv" == true ]]; then
-      bootstrap_anilist_updater
+    if [[ "$is_full_install" == true || "$has_dux" == true ]]; then
+      bootstrap_dux_shell
     fi
-    if [[ "$has_zsh" == true ]]; then
-      bootstrap_zsh_deps
-    fi
-    if [[ "$PERSONAL" == true ]]; then
-      bootstrap_personal_apps
+    if [[ "$is_full_install" == true || "$has_dux" == true || "$has_desktop" == true ]]; then
+      bootstrap_packages
     fi
   fi
 
+  # 2. Link/render dotfiles (or unlink/uninstall/sync).
   for pkg in "${packages[@]}"; do
     process_package "$pkg"
   done
 
+  # 3. Post-link setup: tools that write into linked config dirs, fonts, services.
   if [[ "$MODE" == "install" && "$SKIP_DEPS" == false ]]; then
-    bootstrap_fonts
-    check_tools
+    if [[ "$has_zsh" == true ]]; then
+      bootstrap_zsh_deps
+    fi
+    if [[ "$has_mpv" == true ]]; then
+      bootstrap_anilist_updater
+    fi
+    if [[ "$has_fonts" == true ]]; then
+      bootstrap_fonts
+    fi
+    if [[ "$PERSONAL" == true ]]; then
+      bootstrap_personal_apps
+    fi
+    if [[ "$has_desktop" == true ]]; then
+      bootstrap_dux_services
+    fi
+    if [[ "$is_full_install" == true ]]; then
+      check_tools
+    fi
   elif [[ "$MODE" == "uninstall" ]]; then
     restore_latest_backup
     if command -v fc-cache >/dev/null 2>&1 && [[ "$DRY_RUN" == false ]]; then

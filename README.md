@@ -27,7 +27,7 @@
 
 ## Install
 
-On Fedora, clone and run `./install.sh` — it enables the required COPR/Terra repos, installs the full Dux shell & Niri stack, bootstraps Oh My Zsh and Nerd Fonts, and links all configs and wallpapers (backing up any existing files to `~/.dotfiles-backup/`):
+On Fedora, clone and run `./install.sh` — it runs the official Dux shell installer (`install.duxlabs.dev`) if `dms` isn't installed yet, installs the companion CLI/desktop packages, links all configs and wallpapers (backing up any existing files to `~/.dotfiles-backup/`), and bootstraps Oh My Zsh, Nerd Fonts, and companion services:
 
 ```bash
 git clone https://github.com/arprge/dankdots.git ~/dankdots
