@@ -25,6 +25,7 @@ Built on top of [niri](https://github.com/YaLTeR/niri) and [dux-shell](https://d
 - **Shell & theming extras**: tuned DMS layout and keybinds, `gruvboxMulti` theme, `materialPlayer` & `screenCaptureToolbar` plugins, `dfiles` as the XDG file-picker portal, Darkly Qt/GTK setup, and a custom `matugen` template for `micro`
 - **Terminal & shell**: Kitty with cursor trail and powerline tabs, Zsh + customized Starship prompt, custom Fastfetch logo, Yazi (`smart-enter`), and custom Cava shaders
 - **Editors & media**: LazyVim (`nvim`), `micro`, `zed`, and `mpv` configured with `modernz`, `thumbfast`, and `mpv-anilist-updater`
+- **Shared Proton for gaming**: optional `Proton-CachyOS Latest` installed once into Steam's `compatibilitytools.d` so both Steam and Lutris (via `umu`) share the same runner, with `.protonplus` metadata for ProtonPlus updates (prompted on normal install, automatic with `--me`)
 - **Fonts & wallpapers**: bundled UI fonts (`Oxanium`, `Bodoni Moda`, `Roboto Flex`), `GoogleSansCode Nerd Font`, and curated wallpapers
 
 ## Install
